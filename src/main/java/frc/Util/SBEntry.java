@@ -1,6 +1,7 @@
 package frc.Util;
 
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 public class SBEntry {
     private SimpleWidget widget;
     private Map<String, Object> properties;
+    private Runnable lambda = ()->{};
 
     SBEntry(SimpleWidget widget){
         this.widget = widget;
@@ -41,5 +43,13 @@ public class SBEntry {
 
     public void setView(BuiltInWidgets view){
         this.widget.withWidget(view);
+    }
+
+    public void setPeriodic(Runnable lambda){
+        this.lambda = lambda;
+    }
+
+    public void periodic(){
+        lambda.run();
     }
 }

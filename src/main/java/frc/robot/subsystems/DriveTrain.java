@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.HashMap;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -15,15 +13,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Util.Gyroscope;
 import frc.Util.SBNumber;
 import frc.Util.SBTab;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 
 
 public class DriveTrain extends SubsystemBase {
@@ -46,6 +41,7 @@ public class DriveTrain extends SubsystemBase {
   private Gyroscope gyro = new Gyroscope(new AHRS(SPI.Port.kMXP), true);                                        // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
   SBTab tab = new SBTab("Drive Subsystem");
+  private double counter = 0;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
@@ -64,8 +60,11 @@ public class DriveTrain extends SubsystemBase {
   private void populateTab(){
     SBNumber gyroAngle = tab.getNumber("gyroNum", 0);
     gyroAngle.setValue(7);
-    gyroAngle.setPosition(1,1);
+    gyroAngle.setPosition(2,1);
     gyroAngle.setSize(3,3);
+    gyroAngle.setPeriodic(()->{
+        gyroAngle.setValue(gyroAngle.getValue(0)+ 1);
+    });
   } 
 
   // Encoder-related methods
@@ -161,5 +160,6 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
     
     updateOdometry(); //Must be continuously called to maintain an accurate position of the robot
+    tab.periodic();
   }
 }

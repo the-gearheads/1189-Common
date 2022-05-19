@@ -4,23 +4,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
 public class SBTab { // SB stands for ShuffleBoard
     private ShuffleboardTab tab;
     private HashMap<String, SBEntry> widgets = new HashMap<String, SBEntry>();
+    private HashMap<String, SBGroup> groups = new HashMap<String, SBGroup>();
 
     public SBTab(String name){
         this.tab = Shuffleboard.getTab(name);
         widgets = new HashMap<String,SBEntry>();
     }
 
+    public SBGroup getGroup(String name, BuiltInLayouts view){
+        if(groups.containsKey(name)){
+            SBGroup group = groups.get(name);
+            return groups.get(name);
+        }
+        SBGroup newGroup = new SBGroup(tab.getLayout(name, view));
+        groups.put(name, newGroup);
+        return newGroup;
+    }
+
     public SBNumber getNumber(String name, double defaultVal){ // Set OR CREATES double
         if(widgets.containsKey(name)){
-            tab.add(name, defaultVal);
             SBEntry entry = widgets.get(name);
             if(entry instanceof SBNumber){
                 return (SBNumber) widgets.get(name);
@@ -59,5 +68,11 @@ public class SBTab { // SB stands for ShuffleBoard
         SBBoolean newEntry = new SBBoolean(tab.add(name, defaultVal));
         widgets.put(name, newEntry);
         return (SBBoolean) newEntry;
+    }
+
+    public void periodic(){
+        for(SBEntry widget : widgets.values()){
+            widget.periodic();
+        }
     }
 }
