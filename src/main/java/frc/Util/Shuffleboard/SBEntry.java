@@ -1,4 +1,4 @@
-package frc.Util;
+package frc.Util.Shuffleboard;
 
 import java.util.Map;
 import java.util.function.DoubleSupplier;

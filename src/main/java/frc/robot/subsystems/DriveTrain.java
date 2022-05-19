@@ -15,8 +15,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Util.Gyroscope;
-import frc.Util.SBNumber;
-import frc.Util.SBTab;
+import frc.Util.Shuffleboard.SBNumber;
+import frc.Util.Shuffleboard.SBTab;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -41,7 +41,6 @@ public class DriveTrain extends SubsystemBase {
   private Gyroscope gyro = new Gyroscope(new AHRS(SPI.Port.kMXP), true);                                        // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
   SBTab tab = new SBTab("Drive Subsystem");
-  private double counter = 0;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
