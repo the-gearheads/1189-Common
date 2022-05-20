@@ -37,7 +37,7 @@ public class SBTab { // SB stands for ShuffleBoard
                 DriverStation.reportError("widget was requested with incorrect type", true);
             }
         }
-        SBNumber newEntry = new SBNumber(tab.add(name, defaultVal));
+        SBNumber newEntry = new SBNumber(tab.add(name, defaultVal), defaultVal);
         widgets.put(name, newEntry);
         return newEntry;
     }
@@ -51,7 +51,7 @@ public class SBTab { // SB stands for ShuffleBoard
                 DriverStation.reportError("widget was requested with incorrect type", true);
             }
         }
-        SBString newEntry = new SBString(tab.add(name, defaultVal));
+        SBString newEntry = new SBString(tab.add(name, defaultVal), defaultVal);
         widgets.put(name, newEntry);
         return newEntry;
     }
@@ -65,7 +65,7 @@ public class SBTab { // SB stands for ShuffleBoard
                 DriverStation.reportError("widget was requested with incorrect type", true);
             }
         }
-        SBBoolean newEntry = new SBBoolean(tab.add(name, defaultVal));
+        SBBoolean newEntry = new SBBoolean(tab.add(name, defaultVal), defaultVal);
         widgets.put(name, newEntry);
         return (SBBoolean) newEntry;
     }

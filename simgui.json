@@ -19,6 +19,9 @@
       "Drive Subsystem": {
         "open": true
       },
+      "FF Characterizer": {
+        "open": true
+      },
       "open": true
     }
   }

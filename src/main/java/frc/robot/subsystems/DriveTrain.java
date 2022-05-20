@@ -1,7 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
+// An ode to thyself
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -15,10 +15,13 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Util.Gyroscope;
+import frc.Util.Shuffleboard.SBBoolean;
 import frc.Util.Shuffleboard.SBNumber;
 import frc.Util.Shuffleboard.SBTab;
 import frc.robot.Constants;
+import frc.robot.commands.FFCharacterizer;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 
 
 public class DriveTrain extends SubsystemBase {
@@ -41,6 +44,8 @@ public class DriveTrain extends SubsystemBase {
   private Gyroscope gyro = new Gyroscope(new AHRS(SPI.Port.kMXP), true);                                        // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
   SBTab tab = new SBTab("Drive Subsystem");
+  private Boolean isRunning;
+  private int counter;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
@@ -53,18 +58,76 @@ public class DriveTrain extends SubsystemBase {
 
     setPosition(Constants.DriveTrain.START_POSITION);
     populateTab();
+
+    setDefaultCommand(new FFCharacterizer(this));
   }
 
   //Creates DriveSystem ShuffleBoard Tab
   private void populateTab(){
-    SBNumber gyroAngle = tab.getNumber("gyroNum", 0);
-    gyroAngle.setValue(7);
-    gyroAngle.setPosition(2,1);
-    gyroAngle.setSize(3,3);
-    gyroAngle.setPeriodic(()->{
-        gyroAngle.setValue(gyroAngle.getValue(0)+ 1);
+    SBBoolean startCharacterizer = tab.getBoolean("Start", false)
+    .setView(BuiltInWidgets.kToggleButton)
+    .setSize(1,1)
+    .setPosition(22,0)
+    .setPeriodic((current)->{
+      isRunning = current;
     });
-  } 
+
+    SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
+    .setView(BuiltInWidgets.kGraph)
+    .setPosition(0,0)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
+    .setSize(10,1)
+    .setPosition(0,10)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
+    .setView(BuiltInWidgets.kGraph)
+    .setPosition(10,0)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
+    .setSize(10,1)
+    .setPosition(10,10)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber rightSpeedGraph = tab.getNumber("Right Speed Graph", 0)
+    .setView(BuiltInWidgets.kGraph)
+    .setPosition(25,0)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber rightSpeedVal = tab.getNumber("Right Speed Val", 0)
+    .setPosition(25,10)
+    .setSize(10,1)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber reqRightSpeedGraph = tab.getNumber("Requested Right Speed Graph", 0)
+    .setView(BuiltInWidgets.kGraph)
+    .setPosition(36,0)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+
+    SBNumber reqRightSpeedVal = tab.getNumber("Requested Right Speed Val", 0)
+    .setSize(10,1)
+    .setPosition(36,10)
+    .setPeriodic(()->{
+      return getLeftVel();
+    });
+  }
 
   // Encoder-related methods
   public double getRightPos(){
@@ -96,7 +159,7 @@ public class DriveTrain extends SubsystemBase {
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
     double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return linearDisplacement;
+    return ++this.counter;
   }
 
   // Position-related methods

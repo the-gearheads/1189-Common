@@ -3,17 +3,17 @@ package frc.Util.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
-public class SBNumber extends SBEntry{
+public class SBNumber extends SBEntry<SBNumber, Double> {
 
-    public SBNumber(SimpleWidget widget){
-        super(widget);
+    public SBNumber(SimpleWidget widget, Double defaultVal){
+        super(widget, defaultVal);
     }
 
-    public void setValue(double val){
+    public void setValue(Double val){
         getWidget().getEntry().setDouble(val);
     }
 
-    public double getValue(double defaultVal){
+    public Double getValue(Double defaultVal){
         return getWidget().getEntry().getDouble(defaultVal);
     }
 }
