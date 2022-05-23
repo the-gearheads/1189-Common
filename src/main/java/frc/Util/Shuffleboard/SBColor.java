@@ -1,4 +1,4 @@
-package frc.Util.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;

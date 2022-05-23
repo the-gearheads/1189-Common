@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Util.Gyroscope;
 import frc.Util.Shuffleboard.SBBoolean;
+import frc.Util.Shuffleboard.SBGroup;
 import frc.Util.Shuffleboard.SBNumber;
 import frc.Util.Shuffleboard.SBTab;
 import frc.robot.Constants;
@@ -72,40 +73,60 @@ public class DriveTrain extends SubsystemBase {
       isRunning = current;
     });
 
+    SBGroup leftSpeedGroup = tab.getGroup("Left Speed")
+    .setPosition(0,0)
+    .setWidth(10);
+
     SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
     .setView(BuiltInWidgets.kGraph)
-    .setPosition(0,0)
+    .setSize(10,10)
+    // .setPosition(0,0)
     .setPeriodic(()->{
       return getLeftVel();
     });
 
     SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
-    .setSize(10,1)
-    .setPosition(0,10)
+    .setSize(5,1)
+    // .setPosition(0,10)
     .setPeriodic(()->{
       return getLeftVel();
     });
+    leftSpeedGroup.append(leftSpeedVal);
+
+    SBGroup reqLeftSpeedGroup = tab.getGroup("Left Speed")
+    .setPosition(10,0)
+    .setWidth(10);
 
     SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
     .setView(BuiltInWidgets.kGraph)
-    .setPosition(10,0)
+    .setSize(10,10)
+    // .setPosition(10,0)
     .setPeriodic(()->{
       return getLeftVel();
     });
+    reqLeftSpeedGroup.append(reqLeftSpeedGraph);
+
 
     SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
     .setSize(10,1)
-    .setPosition(10,10)
+    // .setPosition(10,10)
     .setPeriodic(()->{
       return getLeftVel();
     });
+    reqLeftSpeedGroup.append(reqLeftSpeedVal);
+
+
+    SBGroup rightSpeedGroup = tab.getGroup("Left Speed")
+    .setPosition(10,0)
+    .setWidth(10);
 
     SBNumber rightSpeedGraph = tab.getNumber("Right Speed Graph", 0)
     .setView(BuiltInWidgets.kGraph)
-    .setPosition(25,0)
+    // .setPosition(25,0)
     .setPeriodic(()->{
       return getLeftVel();
     });
+    rightSpeedGroup.append(rightSpeedGraph);
 
     SBNumber rightSpeedVal = tab.getNumber("Right Speed Val", 0)
     .setPosition(25,10)

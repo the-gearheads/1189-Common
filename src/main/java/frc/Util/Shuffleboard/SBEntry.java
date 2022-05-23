@@ -1,4 +1,4 @@
-package frc.Util.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -13,10 +13,14 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
     private Map<String, Object> properties;
     private Function<R, R> lambda = (current)->{return current;};
     private R defaultVal;
+    private int width = 0;
+    private int height = 0;
 
     SBEntry(SimpleWidget widget, R defaultVal){
         this.widget = widget;
         this.defaultVal = defaultVal;
+        this.width = 3;
+        this.height = 3;
     }
 
     public SimpleWidget getWidget(){
@@ -25,7 +29,8 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
 
     public T setSize(int width, int height){
         this.widget.withSize(width,height);
-
+        this.width = width;
+        this.height = height;
         return (T) this;
     }
 
@@ -59,7 +64,13 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
 
     public T setView(BuiltInWidgets view){
         this.widget.withWidget(view);
-
+        
+        if(view.equals(BuiltInWidgets.kGraph)){
+            if(this.width < 10 || this.height < 10){
+                this.width = 10;
+                this.height = 10;
+            }
+        }
         return (T) this;
     }
 
@@ -88,6 +99,14 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
 
     public void periodic(){
         this.setValue(lambda.apply(this.getValue(defaultVal)));
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
     }
 
     public abstract void setValue(R value);

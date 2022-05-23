@@ -1,9 +1,9 @@
-package frc.Util.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
-public class SBNumber extends SBEntry<SBNumber, Double> {
+public class SBNumber extends SBEntry<SBNumber, Double> { 
 
     public SBNumber(SimpleWidget widget, Double defaultVal){
         super(widget, defaultVal);

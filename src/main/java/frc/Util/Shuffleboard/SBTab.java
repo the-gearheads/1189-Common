@@ -1,4 +1,4 @@
-package frc.Util.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +18,12 @@ public class SBTab { // SB stands for ShuffleBoard
         widgets = new HashMap<String,SBEntry>();
     }
 
-    public SBGroup getGroup(String name, BuiltInLayouts view){
+    public SBGroup getGroup(String name){
         if(groups.containsKey(name)){
             SBGroup group = groups.get(name);
-            return groups.get(name);
+            return group;
         }
-        SBGroup newGroup = new SBGroup(tab.getLayout(name, view));
+        SBGroup newGroup = new SBGroup();
         groups.put(name, newGroup);
         return newGroup;
     }
