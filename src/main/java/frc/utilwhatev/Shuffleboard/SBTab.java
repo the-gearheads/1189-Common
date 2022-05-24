@@ -1,10 +1,11 @@
-package frc.util.Shuffleboard;
+package frc.utilwhatev.Shuffleboard;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -16,16 +17,6 @@ public class SBTab { // SB stands for ShuffleBoard
     public SBTab(String name){
         this.tab = Shuffleboard.getTab(name);
         widgets = new HashMap<String,SBEntry>();
-    }
-
-    public SBGroup getGroup(String name){
-        if(groups.containsKey(name)){
-            SBGroup group = groups.get(name);
-            return group;
-        }
-        SBGroup newGroup = new SBGroup();
-        groups.put(name, newGroup);
-        return newGroup;
     }
 
     public SBNumber getNumber(String name, double defaultVal){ // Set OR CREATES double
@@ -68,6 +59,34 @@ public class SBTab { // SB stands for ShuffleBoard
         SBBoolean newEntry = new SBBoolean(tab.add(name, defaultVal), defaultVal);
         widgets.put(name, newEntry);
         return (SBBoolean) newEntry;
+    }
+    
+    public SBGroup getGroup(String name){
+        if(groups.containsKey(name)){
+            SBGroup group = groups.get(name);
+            return group;
+        }
+        SBGroup newGroup = new SBGroup();
+        groups.put(name, newGroup);
+        return newGroup;
+    }
+
+    public SBNumberGroup getNumberGroup(String name, double defaultVal){ // Set OR CREATES double
+        if(groups.containsKey(name)){
+            SBGroup group = groups.get(name);
+            if(group instanceof SBNumberGroup){
+                return (SBNumberGroup) groups.get(name);
+            }else{
+                DriverStation.reportError("group was requested with incorrect type", true);
+            }
+        }
+
+        SBNumber graph = this.getNumber(name + " graph", defaultVal);
+        graph.setView(BuiltInWidgets.kGraph);
+        SBNumber text  = this.getNumber(name, defaultVal);
+        SBNumberGroup newNumberGroup = new SBNumberGroup(graph, text);
+        groups.put(name, newNumberGroup);
+        return (SBNumberGroup) newNumberGroup;
     }
 
     public void periodic(){

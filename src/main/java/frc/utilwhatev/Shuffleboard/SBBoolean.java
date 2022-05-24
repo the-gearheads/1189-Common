@@ -1,4 +1,4 @@
-package frc.util.Shuffleboard;
+package frc.utilwhatev.Shuffleboard;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 public class SBBoolean extends SBEntry<SBBoolean, Boolean>{
 
     public SBBoolean(SimpleWidget widget, Boolean defaultVal){
-        super(widget, defaultVal);
+        super(widget, defaultVal, BuiltInWidgets.kBooleanBox);
     }
 
     public void setValue(Boolean val){

@@ -14,15 +14,17 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.Util.Gyroscope;
-import frc.Util.Shuffleboard.SBBoolean;
-import frc.Util.Shuffleboard.SBGroup;
-import frc.Util.Shuffleboard.SBNumber;
-import frc.Util.Shuffleboard.SBTab;
 import frc.robot.Constants;
 import frc.robot.commands.FFCharacterizer;
+import frc.utilwhatev.Gyroscope;
+import frc.utilwhatev.Shuffleboard.SBBoolean;
+import frc.utilwhatev.Shuffleboard.SBGroup;
+import frc.utilwhatev.Shuffleboard.SBNumber;
+import frc.utilwhatev.Shuffleboard.SBNumberGroup;
+import frc.utilwhatev.Shuffleboard.SBTab;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 
 public class DriveTrain extends SubsystemBase {
@@ -59,7 +61,6 @@ public class DriveTrain extends SubsystemBase {
 
     setPosition(Constants.DriveTrain.START_POSITION);
     populateTab();
-
     setDefaultCommand(new FFCharacterizer(this));
   }
 
@@ -68,86 +69,31 @@ public class DriveTrain extends SubsystemBase {
     SBBoolean startCharacterizer = tab.getBoolean("Start", false)
     .setView(BuiltInWidgets.kToggleButton)
     .setSize(1,1)
-    .setPosition(22,0)
+    .setPosition(40,0)
     .setPeriodic((current)->{
       isRunning = current;
     });
 
-    SBGroup leftSpeedGroup = tab.getGroup("Left Speed")
-    .setPosition(0,0)
-    .setWidth(10);
+    SBNumberGroup leftSpeed = tab.getNumberGroup("Left Speed", 0);
+    leftSpeed.setPosition(0,0);
+    leftSpeed.setWidth(10);
+    leftSpeed.setPeriodic(()->getLeftVel());
 
-    SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(10,10)
-    // .setPosition(0,0)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-
-    SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
-    .setSize(5,1)
-    // .setPosition(0,10)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-    leftSpeedGroup.append(leftSpeedVal);
-
-    SBGroup reqLeftSpeedGroup = tab.getGroup("Left Speed")
-    .setPosition(10,0)
-    .setWidth(10);
-
-    SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(10,10)
-    // .setPosition(10,0)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-    reqLeftSpeedGroup.append(reqLeftSpeedGraph);
+    SBNumberGroup reqLeftSpeed = tab.getNumberGroup("req Left Speed", 0);
+    reqLeftSpeed.setPosition(10,0);
+    reqLeftSpeed.setWidth(10);
+    reqLeftSpeed.setPeriodic(()->getLeftVel());
 
 
-    SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
-    .setSize(10,1)
-    // .setPosition(10,10)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-    reqLeftSpeedGroup.append(reqLeftSpeedVal);
+    SBNumberGroup rightSpeed = tab.getNumberGroup("Right Speed", 0);
+    rightSpeed.setPosition(20,0);
+    rightSpeed.setWidth(10);
+    rightSpeed.setPeriodic(()->getLeftVel());
 
-
-    SBGroup rightSpeedGroup = tab.getGroup("Left Speed")
-    .setPosition(10,0)
-    .setWidth(10);
-
-    SBNumber rightSpeedGraph = tab.getNumber("Right Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    // .setPosition(25,0)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-    rightSpeedGroup.append(rightSpeedGraph);
-
-    SBNumber rightSpeedVal = tab.getNumber("Right Speed Val", 0)
-    .setPosition(25,10)
-    .setSize(10,1)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-
-    SBNumber reqRightSpeedGraph = tab.getNumber("Requested Right Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setPosition(36,0)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
-
-    SBNumber reqRightSpeedVal = tab.getNumber("Requested Right Speed Val", 0)
-    .setSize(10,1)
-    .setPosition(36,10)
-    .setPeriodic(()->{
-      return getLeftVel();
-    });
+    SBNumberGroup reqRightSpeed = tab.getNumberGroup("req Right Speed", 0);
+    reqRightSpeed.setPosition(30,0);
+    reqRightSpeed.setWidth(10);
+    reqRightSpeed.setPeriodic(()->getLeftVel());
   }
 
   // Encoder-related methods
@@ -180,7 +126,7 @@ public class DriveTrain extends SubsystemBase {
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
     double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return ++this.counter;
+    return ++this.counter;//FIX TO 'return linearDisplacement;'
   }
 
   // Position-related methods

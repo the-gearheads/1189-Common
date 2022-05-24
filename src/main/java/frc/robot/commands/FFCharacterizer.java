@@ -6,10 +6,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.Util.Shuffleboard.SBBoolean;
-import frc.Util.Shuffleboard.SBNumber;
-import frc.Util.Shuffleboard.SBTab;
 import frc.robot.subsystems.DriveTrain;
+import frc.utilwhatev.Shuffleboard.SBBoolean;
+import frc.utilwhatev.Shuffleboard.SBNumber;
+import frc.utilwhatev.Shuffleboard.SBTab;
 
 public class FFCharacterizer extends CommandBase {
   private DriveTrain driveTrain;
@@ -29,78 +29,95 @@ public class FFCharacterizer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    populateTab();
+    // populateTab();
   }
 
-  private void populateTab(){
-    SBBoolean startCharacterizer = tab.getBoolean("Start", false)
-    .setView(BuiltInWidgets.kToggleButton)
-    .setSize(1,1)
-    .setPosition(11,0)
-    .setPeriodic((current)->{
-      isRunning = current;
-    });
+  // private void populateTab(){
+  //   SBBoolean startCharacterizer = tab.getBoolean("Start", false)
+  //   .setView(BuiltInWidgets.kToggleButton)
+  //   .setSize(1,1)
+  //   .setPosition(22,0)
+  //   .setPeriodic((current)->{
+  //     isRunning = current;
+  //   });
 
-    SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(3,3)
-    .setPosition(0,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBGroup leftSpeedGroup = tab.getGroup("Left Speed")
+  //   .setPosition(0,0)
+  //   .setWidth(10);
 
-    SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
-    .setSize(3,1)
-    .setPosition(3,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
+  //   .setView(BuiltInWidgets.kGraph)
+  //   .setSize(10,10)
+  //   // .setPosition(0,0)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
 
-    SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(3,3)
-    .setPosition(0,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
+  //   .setSize(5,1)
+  //   // .setPosition(0,10)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+  //   leftSpeedGroup.append(leftSpeedVal);
 
-    SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
-    .setSize(3,1)
-    .setPosition(3,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBGroup reqLeftSpeedGroup = tab.getGroup("Left Speed")
+  //   .setPosition(10,0)
+  //   .setWidth(10);
 
-    SBNumber rightSpeedGraph = tab.getNumber("Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(3,3)
-    .setPosition(15,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
+  //   .setView(BuiltInWidgets.kGraph)
+  //   .setSize(10,10)
+  //   // .setPosition(10,0)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+  //   reqLeftSpeedGroup.append(reqLeftSpeedGraph);
 
-    SBNumber rightSpeedVal = tab.getNumber("Left Speed Val", 0)
-    .setSize(3,1)
-    .setPosition(15,3)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
 
-    SBNumber reqRightSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
-    .setView(BuiltInWidgets.kGraph)
-    .setSize(3,3)
-    .setPosition(18,0)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
+  //   SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
+  //   .setSize(10,1)
+  //   // .setPosition(10,10)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+  //   reqLeftSpeedGroup.append(reqLeftSpeedVal);
 
-    SBNumber reqRightSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
-    .setSize(3,1)
-    .setPosition(18,3)
-    .setPeriodic(()->{
-      return driveTrain.getLeftVel();
-    });
-  }
+
+  //   SBGroup rightSpeedGroup = tab.getGroup("Left Speed")
+  //   .setPosition(10,0)
+  //   .setWidth(10);
+
+  //   SBNumber rightSpeedGraph = tab.getNumber("Right Speed Graph", 0)
+  //   .setView(BuiltInWidgets.kGraph)
+  //   // .setPosition(25,0)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+  //   rightSpeedGroup.append(rightSpeedGraph);
+
+  //   SBNumber rightSpeedVal = tab.getNumber("Right Speed Val", 0)
+  //   .setPosition(25,10)
+  //   .setSize(10,1)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+
+  //   SBNumber reqRightSpeedGraph = tab.getNumber("Requested Right Speed Graph", 0)
+  //   .setView(BuiltInWidgets.kGraph)
+  //   .setPosition(36,0)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+
+  //   SBNumber reqRightSpeedVal = tab.getNumber("Requested Right Speed Val", 0)
+  //   .setSize(10,1)
+  //   .setPosition(36,10)
+  //   .setPeriodic(()->{
+  //     return getLeftVel();
+  //   });
+  // }
+
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

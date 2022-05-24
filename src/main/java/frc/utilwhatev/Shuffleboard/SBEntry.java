@@ -1,9 +1,12 @@
-package frc.util.Shuffleboard;
+package frc.utilwhatev.Shuffleboard;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import static java.util.Map.entry;    
+
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
@@ -13,14 +16,19 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
     private Map<String, Object> properties;
     private Function<R, R> lambda = (current)->{return current;};
     private R defaultVal;
-    private int width = 0;
-    private int height = 0;
+    private WidgetSize size = new WidgetSize(3,3);
+    private BuiltInWidgets view;
+    private Map<BuiltInWidgets, WidgetSize> minSizes = Map.ofEntries(
+        entry(BuiltInWidgets.kTextView, new WidgetSize(3,3)),
+        entry(BuiltInWidgets.kBooleanBox, new WidgetSize(3, 3)),
+        entry(BuiltInWidgets.kToggleButton, new WidgetSize(3, 3)),
+        entry(BuiltInWidgets.kGraph, new WidgetSize(10, 10))
+    );
 
-    SBEntry(SimpleWidget widget, R defaultVal){
+    SBEntry(SimpleWidget widget, R defaultVal, BuiltInWidgets view){
         this.widget = widget;
         this.defaultVal = defaultVal;
-        this.width = 3;
-        this.height = 3;
+        setView(view);
     }
 
     public SimpleWidget getWidget(){
@@ -28,9 +36,13 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
     }
 
     public T setSize(int width, int height){
+        width = Math.max(width, minSizes.get(view).width);
+        height = Math.max(height, minSizes.get(view).height);
+
         this.widget.withSize(width,height);
-        this.width = width;
-        this.height = height;
+        size.width = width;
+        size.height = height;
+
         return (T) this;
     }
 
@@ -63,14 +75,10 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
     }
 
     public T setView(BuiltInWidgets view){
+        this.view = view;
         this.widget.withWidget(view);
+        setSize(this.size.width, this.size.height);
         
-        if(view.equals(BuiltInWidgets.kGraph)){
-            if(this.width < 10 || this.height < 10){
-                this.width = 10;
-                this.height = 10;
-            }
-        }
         return (T) this;
     }
 
@@ -101,12 +109,8 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
         this.setValue(lambda.apply(this.getValue(defaultVal)));
     }
 
-    public int getWidth(){
-        return width;
-    }
-
-    public int getHeight(){
-        return height;
+    public WidgetSize getSize(){
+        return size;
     }
 
     public abstract void setValue(R value);
