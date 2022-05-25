@@ -84,7 +84,6 @@ public class DriveTrain extends SubsystemBase {
     reqLeftSpeed.setWidth(10);
     reqLeftSpeed.setPeriodic(()->getLeftVel());
 
-
     SBNumberGroup rightSpeed = tab.getNumberGroup("Right Speed", 0);
     rightSpeed.setPosition(20,0);
     rightSpeed.setWidth(10);

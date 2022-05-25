@@ -113,6 +113,12 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
         return size;
     }
 
+    public T appendTo(SBGroup group){
+        group.append(this);
+        
+        return (T) this;
+    }
+
     public abstract void setValue(R value);
 
     public abstract R getValue(R defaultVal);

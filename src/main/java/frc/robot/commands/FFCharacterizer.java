@@ -4,24 +4,38 @@
 
 package frc.robot.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.utilwhatev.Shuffleboard.SBBoolean;
+import frc.utilwhatev.Shuffleboard.SBGroup;
 import frc.utilwhatev.Shuffleboard.SBNumber;
+import frc.utilwhatev.Shuffleboard.SBString;
 import frc.utilwhatev.Shuffleboard.SBTab;
 
 public class FFCharacterizer extends CommandBase {
   private DriveTrain driveTrain;
   private SBTab tab;
   private boolean isRunning;
+  private int nextVoltageVal;
+  private Timer timer;
+  private Map<String, Double> speedData;
+  HashMap<Double, Map<String, Double>> voltageSpeedsMap = new HashMap<Double, Map<String, Double>>();
 
   /** Creates a new FFCharacterizer. */
   public FFCharacterizer(DriveTrain driveTrain) {
     this.driveTrain = driveTrain;
     this.tab = new SBTab("FF Characterizer");
     isRunning = false;
-
+    nextVoltageVal = 1;
+    resetSpeedData();
+    
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
   }
@@ -29,109 +43,72 @@ public class FFCharacterizer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // populateTab();
+    timer.reset();
+    timer.start();
+    populateTab();
   }
 
-  // private void populateTab(){
-  //   SBBoolean startCharacterizer = tab.getBoolean("Start", false)
-  //   .setView(BuiltInWidgets.kToggleButton)
-  //   .setSize(1,1)
-  //   .setPosition(22,0)
-  //   .setPeriodic((current)->{
-  //     isRunning = current;
-  //   });
+  private void populateTab(){
+    SBBoolean pause = tab.getBoolean("Pause", true).setPeriodic((current)->{isRunning = current;})
+    .setSize(7,5)
+    .setPosition(0,0);
 
-  //   SBGroup leftSpeedGroup = tab.getGroup("Left Speed")
-  //   .setPosition(0,0)
-  //   .setWidth(10);
+    SBGroup valGroup = tab.getGroup("Values");
+    SBNumber voltage = tab.getNumber("Voltage", 0).setPeriodic(()->(voltageSpeedsMap.size()+1.0)).appendTo(valGroup);
+    SBNumber leftSpeed = tab.getNumber("Left Speed", 0).setPeriodic(()->driveTrain.getLeftVel()).appendTo(valGroup);
+    SBNumber rightSpeed = tab.getNumber("Right Speed", 0).setPeriodic(()->driveTrain.getRightVel()).appendTo(valGroup);
+    valGroup.setPosition(15,0);
 
-  //   SBNumber leftSpeedGraph = tab.getNumber("Left Speed Graph", 0)
-  //   .setView(BuiltInWidgets.kGraph)
-  //   .setSize(10,10)
-  //   // .setPosition(0,0)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-
-  //   SBNumber leftSpeedVal = tab.getNumber("Left Speed Val", 0)
-  //   .setSize(5,1)
-  //   // .setPosition(0,10)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-  //   leftSpeedGroup.append(leftSpeedVal);
-
-  //   SBGroup reqLeftSpeedGroup = tab.getGroup("Left Speed")
-  //   .setPosition(10,0)
-  //   .setWidth(10);
-
-  //   SBNumber reqLeftSpeedGraph = tab.getNumber("Requested Left Speed Graph", 0)
-  //   .setView(BuiltInWidgets.kGraph)
-  //   .setSize(10,10)
-  //   // .setPosition(10,0)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-  //   reqLeftSpeedGroup.append(reqLeftSpeedGraph);
-
-
-  //   SBNumber reqLeftSpeedVal = tab.getNumber("Requested Left Speed Val", 0)
-  //   .setSize(10,1)
-  //   // .setPosition(10,10)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-  //   reqLeftSpeedGroup.append(reqLeftSpeedVal);
-
-
-  //   SBGroup rightSpeedGroup = tab.getGroup("Left Speed")
-  //   .setPosition(10,0)
-  //   .setWidth(10);
-
-  //   SBNumber rightSpeedGraph = tab.getNumber("Right Speed Graph", 0)
-  //   .setView(BuiltInWidgets.kGraph)
-  //   // .setPosition(25,0)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-  //   rightSpeedGroup.append(rightSpeedGraph);
-
-  //   SBNumber rightSpeedVal = tab.getNumber("Right Speed Val", 0)
-  //   .setPosition(25,10)
-  //   .setSize(10,1)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-
-  //   SBNumber reqRightSpeedGraph = tab.getNumber("Requested Right Speed Graph", 0)
-  //   .setView(BuiltInWidgets.kGraph)
-  //   .setPosition(36,0)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-
-  //   SBNumber reqRightSpeedVal = tab.getNumber("Requested Right Speed Val", 0)
-  //   .setSize(10,1)
-  //   .setPosition(36,10)
-  //   .setPeriodic(()->{
-  //     return getLeftVel();
-  //   });
-  // }
+    SBString output = tab.getString("Output", "").setPeriodic(()->voltageSpeedsMap.toString())
+    .setSize(19, 5)
+    .setPosition(0,15);
+  }
 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // pausing capabilities
+    if(!isRunning){
+      driveTrain.setRawSpeeds(new DifferentialDriveWheelSpeeds(0, 0));
+      timer.stop();
+      return;
+    }
+    timer.start();
+
+    driveTrain.setRawSpeeds(new DifferentialDriveWheelSpeeds(voltageSpeedsMap.size()+1, voltageSpeedsMap.size()+1));
+    if(timer.get() % 3 > 1){
+      updateSpeedData();
+    }
+
+    if(timer.get() / 3 > voltageSpeedsMap.size() + 1){
+      Map<String, Double> avgSpeeds = Map.of("left", speedData.get("total left") / speedData.get("left sample count"),
+                                           "right", speedData.get("total right") / speedData.get("right sample count"));
+      voltageSpeedsMap.put(voltageSpeedsMap.size() + 1.0, avgSpeeds);
+
+      resetSpeedData();
+    }
+
     tab.periodic();
+  }
+
+  private void updateSpeedData(){
+    speedData.replace("left total", speedData.get("left total")+driveTrain.getLeftVel());
+    speedData.replace("right total", speedData.get("right total")+driveTrain.getRightVel());
+  }
+  private void resetSpeedData(){
+    speedData = Map.of("total left", 0.0, "total right", 0.0, "left sample count", 0.0, "right sample count", 0.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveTrain.setRawSpeeds(new DifferentialDriveWheelSpeeds(0, 0));
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return voltageSpeedsMap.size() >= 12;
   }
 }
