@@ -99,7 +99,7 @@ public class DriveTrain extends SubsystemBase {
   public double getRightPos(){
     double meanEncoderVal = (rfMotor.getSelectedSensorPosition() + rbMotor.getSelectedSensorPosition()) / 2; // average of right side native encoder units
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
+    double wheelRotations = rotations / Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
     return linearDisplacement;
   }
@@ -107,7 +107,7 @@ public class DriveTrain extends SubsystemBase {
   public double getLeftPos(){
     double meanEncoderVal = (lfMotor.getSelectedSensorPosition() + lbMotor.getSelectedSensorPosition()) / 2; // average of right side native encoder units
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
+    double wheelRotations = rotations / Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
     return linearDisplacement;
   }
@@ -115,7 +115,7 @@ public class DriveTrain extends SubsystemBase {
   public double getRightVel(){
     double meanEncoderVal = (rfMotor.getSelectedSensorVelocity() + rbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
+    double wheelRotations = rotations / Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
     return linearDisplacement;
   }
@@ -123,7 +123,7 @@ public class DriveTrain extends SubsystemBase {
   public double getLeftVel(){
     double meanEncoderVal = (lfMotor.getSelectedSensorVelocity() + lbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
     double rotations = meanEncoderVal / Constants.DriveTrain.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations * Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
+    double wheelRotations = rotations / Constants.DriveTrain.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.DriveTrain.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
     return ++this.counter;//FIX TO 'return linearDisplacement;'
   }
