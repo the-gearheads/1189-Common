@@ -1,4 +1,4 @@
-package frc.utilwhatev.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public class SBGroup { // NOT CURRENTLY USED BECAUSE SB LAYOUTS SUCCKKKKKKKKKK
                        // EDIT: WORKS, SINCE DOESN'T USE LAYOUTS ANYMORE
-                       
+
     private ArrayList<SBEntry> entries;
     private int width;
     private int col;
@@ -50,7 +50,18 @@ public class SBGroup { // NOT CURRENTLY USED BECAUSE SB LAYOUTS SUCCKKKKKKKKKK
 
     public void append(SBEntry entry){
         entries.add(entry);
+        if(entry.getSize().width > this.width){
+            this.width = entry.getSize().width;
+        }
         updateWidth();
         updatePosition();
+    }
+    public WidgetSize getSize(){
+        int width = this.width;
+        int height = 0;
+        for(SBEntry entry: entries){
+            height+=entry.getSize().height;
+        }
+        return new WidgetSize(width, height);
     }
 }

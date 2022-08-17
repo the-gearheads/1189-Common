@@ -1,4 +1,4 @@
-package frc.utilwhatev.Shuffleboard;
+package frc.util.Shuffleboard;
 
 public class WidgetSize {
     public int height;

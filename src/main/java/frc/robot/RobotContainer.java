@@ -4,11 +4,25 @@
 
 package frc.robot;
 
+import javax.xml.stream.util.XMLEventConsumer;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.commands.FFCharacterizer;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Vision;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.controllers.Controllers;
+import frc.robot.controllers.Controllers.ControllerMode;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,7 +33,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveTrain driveTrain = new DriveTrain();
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  // private final Vision vision = new Vision();
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
@@ -31,7 +46,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings(){
+    Controllers.mode = ControllerMode.NORMAL;
+    // Odometry Testing Mode
+    Controllers.driverController.getZeroOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
+      driveTrain.setPosition(Constants.DriveTrain.ZERO_POSITION);
+    }));
+
+    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
+      driveTrain.setPosition(Constants.DriveTrain.START_POSITION);
+    }));
+  }
+
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -41,5 +68,17 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return null;
+  }
+
+  public void updateControllers() {
+    // Do nothing if controller layout hasn't changed.
+    if(!Controllers.didControllersChange()) return; 
+    System.out.println("Updating controller layout");
+
+    // Clear buttons
+    CommandScheduler.getInstance().clearButtons();
+
+    // Find new controllers
+    Controllers.updateActiveControllerInstance();
   }
 }

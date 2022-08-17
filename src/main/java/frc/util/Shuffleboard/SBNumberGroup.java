@@ -1,4 +1,4 @@
-package frc.utilwhatev.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,18 +18,36 @@ public class SBNumberGroup extends SBGroup{
         this.append(text);
     }
 
-    public void setPeriodic(Function<Double,Double> lambda){
+    public SBNumberGroup setPeriodic(Function<Double,Double> lambda){
         graph.setPeriodic(lambda);
         text.setPeriodic(lambda);
+
+        return this;
     }
 
-    public void setPeriodic(Consumer<Double> lambda){
+    public SBNumberGroup setPeriodic(Consumer<Double> lambda){
         graph.setPeriodic(lambda);
         text.setPeriodic(lambda);
+
+        return this;
     }
 
-    public void setPeriodic(Supplier<Double> lambda){
+    public SBNumberGroup setPeriodic(Supplier<Double> lambda){
         graph.setPeriodic(lambda);
         text.setPeriodic(lambda);
+
+        return this;
+    }
+
+    @Override
+    public SBNumberGroup setPosition(int col, int row){
+        super.setPosition(col, row);
+        return this;
+    }
+
+    @Override
+    public SBNumberGroup setWidth(int width){
+        super.setWidth(width);
+        return this;
     }
 }

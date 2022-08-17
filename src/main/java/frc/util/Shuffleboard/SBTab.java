@@ -1,4 +1,4 @@
-package frc.utilwhatev.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,12 +13,17 @@ public class SBTab { // SB stands for ShuffleBoard
     private ShuffleboardTab tab;
     private HashMap<String, SBEntry> widgets = new HashMap<String, SBEntry>();
     private HashMap<String, SBGroup> groups = new HashMap<String, SBGroup>();
+    public static int colNum = 48;
+    public static int rowNum = 22;
 
     public SBTab(String name){
         this.tab = Shuffleboard.getTab(name);
         widgets = new HashMap<String,SBEntry>();
     }
 
+    public ShuffleboardTab getTab(){
+        return tab;
+    }
     public SBNumber getNumber(String name, double defaultVal){ // Set OR CREATES double
         if(widgets.containsKey(name)){
             SBEntry entry = widgets.get(name);
@@ -59,6 +64,20 @@ public class SBTab { // SB stands for ShuffleBoard
         SBBoolean newEntry = new SBBoolean(tab.add(name, defaultVal), defaultVal);
         widgets.put(name, newEntry);
         return (SBBoolean) newEntry;
+    }
+
+    public SBColor getColor(String name, String defaultVal){ // Set OR CREATES double
+        if(widgets.containsKey(name)){
+            SBEntry entry = widgets.get(name);
+            if(entry instanceof SBBoolean){
+                return (SBColor) widgets.get(name);
+            }else{
+                DriverStation.reportError("widget was requested with incorrect type", true);
+            }
+        }
+        SBColor newEntry = new SBColor(tab.add(name, defaultVal), defaultVal);
+        widgets.put(name, newEntry);
+        return (SBColor) newEntry;
     }
     
     public SBGroup getGroup(String name){

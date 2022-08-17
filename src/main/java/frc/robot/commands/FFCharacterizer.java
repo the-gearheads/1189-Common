@@ -13,11 +13,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
-import frc.utilwhatev.Shuffleboard.SBBoolean;
-import frc.utilwhatev.Shuffleboard.SBGroup;
-import frc.utilwhatev.Shuffleboard.SBNumber;
-import frc.utilwhatev.Shuffleboard.SBString;
-import frc.utilwhatev.Shuffleboard.SBTab;
+import frc.util.Shuffleboard.SBBoolean;
+import frc.util.Shuffleboard.SBColor;
+import frc.util.Shuffleboard.SBGroup;
+import frc.util.Shuffleboard.SBNumber;
+import frc.util.Shuffleboard.SBNumberGroup;
+import frc.util.Shuffleboard.SBString;
+import frc.util.Shuffleboard.SBTab;
 
 public class FFCharacterizer extends CommandBase {
   private DriveTrain driveTrain;
@@ -35,7 +37,6 @@ public class FFCharacterizer extends CommandBase {
     isRunning = false;
     nextVoltageVal = 1;
     resetSpeedData();
-    
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
   }
@@ -45,26 +46,39 @@ public class FFCharacterizer extends CommandBase {
   public void initialize() {
     timer.reset();
     timer.start();
-    populateTab();
   }
 
-  private void populateTab(){
-    SBBoolean pause = tab.getBoolean("Pause", true).setPeriodic((current)->{isRunning = current;})
-    .setSize(7,5)
-    .setPosition(0,0);
+  // private void populateTab(){
+  //   SBBoolean startCharacterizer = tab.getBoolean("Start", false)
+  //   .setView(BuiltInWidgets.kToggleButton)
+  //   .setSize(1,1)
+  //   .setPosition(40,0)
+  //   .setPeriodic((current)->{
+  //     isRunning = current;
+  //   });
 
-    SBGroup valGroup = tab.getGroup("Values");
-    SBNumber voltage = tab.getNumber("Voltage", 0).setPeriodic(()->(voltageSpeedsMap.size()+1.0)).appendTo(valGroup);
-    SBNumber leftSpeed = tab.getNumber("Left Speed", 0).setPeriodic(()->driveTrain.getLeftVel()).appendTo(valGroup);
-    SBNumber rightSpeed = tab.getNumber("Right Speed", 0).setPeriodic(()->driveTrain.getRightVel()).appendTo(valGroup);
-    valGroup.setPosition(15,0);
+  //   SBNumberGroup Angle = tab.getNumberGroup("Left Speed", 0);
+  //   leftSpeed.setPosition(0,0);
+  //   leftSpeed.setWidth(10);
+  //   leftSpeed.setPeriodic(()->getLeftVel());
 
-    SBString output = tab.getString("Output", "").setPeriodic(()->voltageSpeedsMap.toString())
-    .setSize(19, 5)
-    .setPosition(0,15);
-  }
+  //   SBNumberGroup reqLeftSpeed = tab.getNumberGroup("req Left Speed", 0);
+  //   reqLeftSpeed.setPosition(10,0);
+  //   reqLeftSpeed.setWidth(10);
+  //   reqLeftSpeed.setPeriodic(()->getLeftVel());
 
+  //   SBNumberGroup rightSpeed = tab.getNumberGroup("Right Speed", 0);
+  //   rightSpeed.setPosition(20,0);
+  //   rightSpeed.setWidth(10);
+  //   rightSpeed.setPeriodic(()->getLeftVel());
 
+  //   SBNumberGroup reqRightSpeed = tab.getNumberGroup("req Right Speed", 0);
+  //   reqRightSpeed.setPosition(30,0);
+  //   reqRightSpeed.setWidth(10);
+  //   reqRightSpeed.setPeriodic(()->getLeftVel());
+  // }
+
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -75,7 +89,7 @@ public class FFCharacterizer extends CommandBase {
       return;
     }
     timer.start();
-
+    
     driveTrain.setRawSpeeds(new DifferentialDriveWheelSpeeds(voltageSpeedsMap.size()+1, voltageSpeedsMap.size()+1));
     if(timer.get() % 3 > 1){
       updateSpeedData();

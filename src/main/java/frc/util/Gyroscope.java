@@ -1,4 +1,4 @@
-package frc.utilwhatev;
+package frc.util;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -19,7 +19,7 @@ public class Gyroscope {
         this.isInverted = false;
     }
     public Rotation2d getRotation2d(){
-        double direction = isInverted ? -1 : 1;
+        double direction = isInverted ? 1 : -1;
         return new Rotation2d(direction * ahrs.getRotation2d().getRadians());
     }
     public void setRotation2d(Rotation2d newRotation2d){

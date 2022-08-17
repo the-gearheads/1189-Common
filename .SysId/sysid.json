@@ -1,0 +1,17 @@
+{
+  "SysId": {
+    "Analysis Type": "General Mechanism",
+    "Analyzer": {
+      "window": {
+        "visible": false
+      }
+    },
+    "Program Log": {
+      "window": {
+        "visible": false
+      }
+    },
+    "mode": "Client",
+    "serverTeam": "1189"
+  }
+}

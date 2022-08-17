@@ -1,4 +1,4 @@
-package frc.utilwhatev.Shuffleboard;
+package frc.util.Shuffleboard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,8 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
         entry(BuiltInWidgets.kTextView, new WidgetSize(3,3)),
         entry(BuiltInWidgets.kBooleanBox, new WidgetSize(3, 3)),
         entry(BuiltInWidgets.kToggleButton, new WidgetSize(3, 3)),
-        entry(BuiltInWidgets.kGraph, new WidgetSize(10, 10))
+        entry(BuiltInWidgets.kGraph, new WidgetSize(10, 10)),
+        entry(BuiltInWidgets.kNumberSlider, new WidgetSize(10, 5))
     );
 
     SBEntry(SimpleWidget widget, R defaultVal, BuiltInWidgets view){
@@ -106,7 +107,8 @@ public abstract class SBEntry<T extends SBEntry<T, R>, R> {
     }
 
     public void periodic(){
-        this.setValue(lambda.apply(this.getValue(defaultVal)));
+        if(lambda.apply(this.getValue(defaultVal)) != this.getValue(defaultVal))
+            this.setValue(lambda.apply(this.getValue(defaultVal)));
     }
 
     public WidgetSize getSize(){
