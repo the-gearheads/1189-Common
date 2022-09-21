@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -49,8 +50,10 @@ public class DriveTrain extends SubsystemBase {
   private final WPI_TalonFX lfMotor = new WPI_TalonFX(Constants.DriveTrain.LFMOTOR_ID);                                     // left-front motor
   private final WPI_TalonFX lbMotor = new WPI_TalonFX(Constants.DriveTrain.LBMOTOR_ID);                                     // left-back motor
 
-  private final SimpleMotorFeedforward feedforward = 
-            new SimpleMotorFeedforward(Constants.DriveTrain.kS, Constants.DriveTrain.kV);
+  private final SimpleMotorFeedforward leftFeedForward = 
+            new SimpleMotorFeedforward(Constants.DriveTrain.LEFT_FF_kS, Constants.DriveTrain.LEFT_FF_kV);
+  private final SimpleMotorFeedforward rightFeedForward = 
+            new SimpleMotorFeedforward(Constants.DriveTrain.RIGHT_FF_kS, Constants.DriveTrain.RIGHT_FF_kV);
 
   private final DifferentialDriveKinematics kinematics = 
             new DifferentialDriveKinematics(Constants.DriveTrain.TRACK_WIDTH);                                              // Useful in converting controller inputs to wheel speeds
@@ -110,9 +113,41 @@ public class DriveTrain extends SubsystemBase {
     .setPosition(10,0)
     .setWidth(10)
     .setPeriodic(()->gyro.getContinuousAngle());
+    SBNumber leftEncoder = tab.getNumber("Left Encoder", 0)
+    .setPosition(20,0)
+    .setSize(5,5)
+    .setPeriodic(()->getLeftPos());
+    SBNumber rightEncoder = tab.getNumber("Right Encoder", 0)
+    .setPosition(20,5)
+    .setSize(5,5)
+    .setPeriodic(()->getRightPos());
+    SBBoolean zeroEncoder = tab.getBoolean("Zero Encoders", false)
+    .setPosition(20, 10)
+    .setSize(5,5)
+    .setView(BuiltInWidgets.kToggleButton)
+    .setPeriodic((value)->{
+      if(value){
+      setPosition(Constants.DriveTrain.ZERO_POSITION);
+      return false;
+    }else{
+      return value;
+    }});
   }
 
   
+  public void setIdleMode(boolean isBrake){
+    if(isBrake){
+      rfMotor.setNeutralMode(NeutralMode.Brake);
+      lfMotor.setNeutralMode(NeutralMode.Brake);
+      rbMotor.setNeutralMode(NeutralMode.Brake);
+      lbMotor.setNeutralMode(NeutralMode.Brake);
+    }else{
+      rfMotor.setNeutralMode(NeutralMode.Coast);
+      lfMotor.setNeutralMode(NeutralMode.Coast);
+      rbMotor.setNeutralMode(NeutralMode.Coast);
+      lbMotor.setNeutralMode(NeutralMode.Coast);
+    }
+  }
 
   // Encoder-related methods
   public double getRightPos(){
@@ -184,8 +219,8 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds calculateFF(DifferentialDriveWheelSpeeds speeds){
-    double rightFFSpeed = feedforward.calculate(speeds.rightMetersPerSecond);
-    double leftFFSpeed = feedforward.calculate(speeds.leftMetersPerSecond);
+    double rightFFSpeed = rightFeedForward.calculate(speeds.rightMetersPerSecond);
+    double leftFFSpeed = leftFeedForward.calculate(speeds.leftMetersPerSecond);
 
     return new DifferentialDriveWheelSpeeds(leftFFSpeed, rightFFSpeed);
   }

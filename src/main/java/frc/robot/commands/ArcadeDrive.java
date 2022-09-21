@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
 
 public class ArcadeDrive extends CommandBase {
@@ -29,24 +30,21 @@ public class ArcadeDrive extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    driveTrain.setIdleMode(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xVal = xAxis.getAsDouble() * 1;
-    double rotVal = rotAxis.getAsDouble() * 1;
+    double xInput = xAxis.getAsDouble();
+    double rotInput = rotAxis.getAsDouble();
+    double xSpeed = Math.pow(xInput, 2) * (xInput/Math.abs(xInput)) * Constants.DriveTrain.MAX_X_VEL;
+    double rotSpeed = Math.pow(rotInput, 2) * (rotInput/Math.abs(rotInput)) * Constants.DriveTrain.MAX_ROT_VEL;
 
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xVal, 0, rotVal);
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, 0, rotSpeed);
     DifferentialDriveWheelSpeeds wheelSpeeds = driveTrain.toWheelSpeeds(chassisSpeeds);
-
-    SmartDashboard.putNumber("xVal", xVal);
-    SmartDashboard.putNumber("rotVal", rotVal);
-    SmartDashboard.putNumber("Left Wheel Speed", wheelSpeeds.leftMetersPerSecond);
-    SmartDashboard.putNumber("Right Wheel Speed", wheelSpeeds.rightMetersPerSecond);
-    driveTrain.setRawSpeeds(wheelSpeeds);
-
+    var ff = driveTrain.calculateFF(wheelSpeeds);
+    driveTrain.setRawSpeeds(ff);
   }
 
   // Called once the command ends or is interrupted.
