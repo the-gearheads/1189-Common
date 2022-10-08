@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class DriveTrain{
+    public static final class Drive{
 
         public static final int RFMOTOR_ID = 4;
         public static final int RBMOTOR_ID = 5;

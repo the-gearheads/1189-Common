@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.driveTrain;
 
 import java.util.function.DoubleSupplier;
 
@@ -31,6 +31,7 @@ public class ArcadeDrive extends CommandBase {
   @Override
   public void initialize() {
     driveTrain.setIdleMode(true);
+    driveTrain.setRampRate(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,18 +39,34 @@ public class ArcadeDrive extends CommandBase {
   public void execute() {
     double xInput = xAxis.getAsDouble();
     double rotInput = rotAxis.getAsDouble();
-    double xSpeed = Math.pow(xInput, 2) * (xInput/Math.abs(xInput)) * Constants.DriveTrain.MAX_X_VEL;
-    double rotSpeed = Math.pow(rotInput, 2) * (rotInput/Math.abs(rotInput)) * Constants.DriveTrain.MAX_ROT_VEL;
 
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, 0, rotSpeed);
+    xInput = Math.copySign(xInput*xInput, xInput);
+    rotInput = Math.copySign(rotInput*rotInput, rotInput);
+
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xInput, 0, rotInput);
     DifferentialDriveWheelSpeeds wheelSpeeds = driveTrain.toWheelSpeeds(chassisSpeeds);
+    
+    double largestVal = Math.max(Math.abs(wheelSpeeds.leftMetersPerSecond), Math.abs(wheelSpeeds.rightMetersPerSecond));
+    if(largestVal > 1){
+      wheelSpeeds.leftMetersPerSecond/=largestVal;
+      wheelSpeeds.rightMetersPerSecond/=largestVal;
+    }
+
+    wheelSpeeds.leftMetersPerSecond*=Constants.Drive.MAX_X_VEL;
+    wheelSpeeds.rightMetersPerSecond*=Constants.Drive.MAX_X_VEL;
+    
     var ff = driveTrain.calculateFF(wheelSpeeds);
+    SmartDashboard.putNumber("left Speed", ff.leftMetersPerSecond);
+    SmartDashboard.putNumber("right Speed", ff.rightMetersPerSecond);
+    
     driveTrain.setRawSpeeds(ff);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveTrain.setRawSpeeds(0,0);
+  }
 
   // Returns true when the command should end.
   @Override

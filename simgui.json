@@ -10,6 +10,13 @@
       "/LiveWindow/Ungrouped/Talon FX [7]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/Shuffleboard/Drive Subsystem/Field": "Field2d"
+    },
+    "windows": {
+      "/Shuffleboard/Drive Subsystem/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -26,6 +33,9 @@
       "open": true
     },
     "photonvision": {
+      "Camera": {
+        "open": true
+      },
       "USB_Video_Device": {
         "open": true
       },

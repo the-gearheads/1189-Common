@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import frc.robot.commands.FFCharacterizer;
+import frc.robot.commands.driveTrain.FFCharacterizer;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,11 +50,11 @@ public class RobotContainer {
     Controllers.mode = ControllerMode.NORMAL;
     // Odometry Testing Mode
     Controllers.driverController.getZeroOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
-      driveTrain.setPosition(Constants.DriveTrain.ZERO_POSITION);
+      driveTrain.setPosition(Constants.Drive.ZERO_POSITION);
     }));
 
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
-      driveTrain.setPosition(Constants.DriveTrain.START_POSITION);
+      driveTrain.setPosition(Constants.Drive.START_POSITION);
     }));
   }
 

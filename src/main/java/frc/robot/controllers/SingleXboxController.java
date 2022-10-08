@@ -16,10 +16,10 @@ public class SingleXboxController  {
     }
 
     public double getMoveAxis() {
-        return MathUtil.applyDeadband(controller.getLeftY(), Constants.Controller.DRIVE_DEADBAND);
+        return -MathUtil.applyDeadband(controller.getLeftY(), Constants.Controller.DRIVE_DEADBAND);
     }
     public double getRotateAxis() {
-        return MathUtil.applyDeadband(controller.getRawAxis(0), Constants.Controller.ROTATE_DEADBAND); // delete and uncomment next line
+        return MathUtil.applyDeadband(controller.getRightX(), Constants.Controller.ROTATE_DEADBAND); // delete and uncomment next line
         // return MathUtil.applyDeadband(controller.getRightX(), Constants.Controller.ROTATE_DEADBAND);
     }
 
