@@ -19,20 +19,20 @@ public class SingleXboxController  {
         return -MathUtil.applyDeadband(controller.getLeftY(), Constants.Controller.DRIVE_DEADBAND);
     }
     public double getRotateAxis() {
-        return MathUtil.applyDeadband(controller.getRightX(), Constants.Controller.ROTATE_DEADBAND); // delete and uncomment next line
+        return -MathUtil.applyDeadband(controller.getRightX(), Constants.Controller.ROTATE_DEADBAND); // delete and uncomment next line
         // return MathUtil.applyDeadband(controller.getRightX(), Constants.Controller.ROTATE_DEADBAND);
     }
 
     public Button getZeroOdometryButton(ControllerMode mode){
-        if(Controllers.mode.equals(mode))
+        // if(Controllers.mode.equals(mode))
             return new JoystickButton(controller, XboxController.Button.kA.value);
-        else   
-            return new Button(()->false);
+        // else   
+            // return new Button(()->false);
     }
     public Button getResetOdometryButton(ControllerMode mode){
-        if(Controllers.mode.equals(mode))
+        // if(Controllers.mode.equals(mode))
             return new JoystickButton(controller, XboxController.Button.kY.value);
-        else
-            return new Button(()->false);
+        // else
+            // return new Button(()->false);
     }
 }

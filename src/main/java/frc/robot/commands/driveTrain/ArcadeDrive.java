@@ -31,7 +31,7 @@ public class ArcadeDrive extends CommandBase {
   @Override
   public void initialize() {
     driveTrain.setIdleMode(true);
-    driveTrain.setRampRate(1);
+    driveTrain.setRampRate(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -51,13 +51,15 @@ public class ArcadeDrive extends CommandBase {
       wheelSpeeds.leftMetersPerSecond/=largestVal;
       wheelSpeeds.rightMetersPerSecond/=largestVal;
     }
-
+    SmartDashboard.putNumber("left wheel", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("right wheel", wheelSpeeds.rightMetersPerSecond);
     wheelSpeeds.leftMetersPerSecond*=Constants.Drive.MAX_X_VEL;
     wheelSpeeds.rightMetersPerSecond*=Constants.Drive.MAX_X_VEL;
-    
+    SmartDashboard.putNumber("left wheel after", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("right wheel after", wheelSpeeds.rightMetersPerSecond);
     var ff = driveTrain.calculateFF(wheelSpeeds);
-    SmartDashboard.putNumber("left Speed", ff.leftMetersPerSecond);
-    SmartDashboard.putNumber("right Speed", ff.rightMetersPerSecond);
+    SmartDashboard.putNumber("left FF", ff.leftMetersPerSecond);
+    SmartDashboard.putNumber("right FF", ff.rightMetersPerSecond);
     
     driveTrain.setRawSpeeds(ff);
   }

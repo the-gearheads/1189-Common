@@ -51,7 +51,7 @@ public class DriveTrain extends SubsystemBase {
   private final WPI_TalonFX lbMotor = new WPI_TalonFX(Constants.Drive.LBMOTOR_ID);                                     // left-back motor
 
   private final SimpleMotorFeedforward leftFeedForward = 
-            new SimpleMotorFeedforward(Constants.Drive.LEFT_FF_kS, Constants.Drive.LEFT_FF_kV);
+            new SimpleMotorFeedforward(Constants.Drive.LEFT_FF_kS, Constants.Drive.LEFT_FF_kV, Constants.Drive.LEFT_FF_kA);
   private final SimpleMotorFeedforward rightFeedForward = 
             new SimpleMotorFeedforward(Constants.Drive.RIGHT_FF_kS, Constants.Drive.RIGHT_FF_kV);
 
@@ -168,6 +168,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double getRightVel(){
     double meanEncoderVal = (rfMotor.getSelectedSensorVelocity() + rbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
+    meanEncoderVal *= 10;
     double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
     double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
@@ -176,6 +177,7 @@ public class DriveTrain extends SubsystemBase {
 
   public double getLeftVel(){
     double meanEncoderVal = (lfMotor.getSelectedSensorVelocity() + lbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
+    meanEncoderVal *= 10;
     double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
     double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
     double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
@@ -215,10 +217,10 @@ public class DriveTrain extends SubsystemBase {
     speeds.rightMetersPerSecond  = MathUtil.clamp(speeds.rightMetersPerSecond, -12,12);
     speeds.leftMetersPerSecond  = MathUtil.clamp(speeds.leftMetersPerSecond, -12,12);
 
-    rfMotor.set(speeds.rightMetersPerSecond);
-    rbMotor.set(speeds.rightMetersPerSecond);
-    lfMotor.set(speeds.leftMetersPerSecond);
-    lbMotor.set(speeds.leftMetersPerSecond);
+    rfMotor.setVoltage(speeds.rightMetersPerSecond);
+    rbMotor.setVoltage(speeds.rightMetersPerSecond);
+    lfMotor.setVoltage(speeds.leftMetersPerSecond);
+    lbMotor.setVoltage(speeds.leftMetersPerSecond);
   }
   public void setRawSpeeds(double right, double left){
     DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(left, right);

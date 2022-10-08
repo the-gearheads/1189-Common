@@ -25,7 +25,7 @@ public class FollowPathWeaver extends CommandBase {
 
   public FollowPathWeaver(DriveTrain driveTrain, String trajectoryJSON){
     this.driveTrain = driveTrain;
-    this.trajectoryJSON = "paths/" + trajectoryJSON + ".wpilib.json";
+    this.trajectoryJSON = "output/" + trajectoryJSON + ".wpilib.json";
     this.timer = new Timer();
     this.ramsete = new RamseteController();
     addRequirements(driveTrain);

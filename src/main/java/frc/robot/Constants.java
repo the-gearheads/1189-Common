@@ -26,17 +26,19 @@ public final class Constants {
         public static final double SHAFT_TO_WHEEL_GEAR_RATIO = 12.75;//12.75 rotations for encoder to 1 rotation for wheel
         public static final double WHEEL_CIRCUMFERENCE = 0.64;//meters
         public static final double TRACK_WIDTH = 0.68863;//meter
-        public static final Pose2d START_POSITION = new Pose2d(1,1, new Rotation2d(0));
-        public static final double LEFT_FF_kS = 0.59659;
-        public static final double LEFT_FF_kV = 2.1425;
-        public static final double RIGHT_FF_kS = 0.60156;
-        public static final double RIGHT_FF_kV = 2.1364;
+        public static final Pose2d START_POSITION = new Pose2d(7.4,1.5, new Rotation2d(Math.PI/2));
+        public static final double LEFT_FF_kS = 0.64993;
+        public static final double LEFT_FF_kV = 2.0752;
+        public static final double LEFT_FF_kA = 0.47984;
+        public static final double RIGHT_FF_kS = 0.64184;
+        public static final double RIGHT_FF_kV = 2.0963;
+        public static final double RIGHT_FF_kA = 0.20007;
         public static final double COMBINED_FF_kS = 0.60156;
         public static final double COMBINED_FF_kV = 2.1364;
         public static final Pose2d ZERO_POSITION = new Pose2d(0,0, new Rotation2d(0));
         public static final double WHEEL_RADIUS = 0.1016;
-        public static final double MAX_X_VEL = 5.322;
-        public static final double MAX_ROT_VEL = 3;
+        public static final double MAX_X_VEL = 2;
+        public static final double MAX_ROT_VEL = 1;
 
 
 
