@@ -95,14 +95,117 @@ public class DriveTrain extends SubsystemBase {
     lbMotor.setInverted(InvertType.FollowMaster);
 
     // Set up gyro simulation 
-    int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
-    simAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+    int dev      = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+        simAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
     
     
     setPosition(Constants.Drive.START_POSITION);
     setDefaultCommand(new ArcadeDrive(this, ()->Controllers.driverController.getMoveAxis(), ()->Controllers.driverController.getRotateAxis()));
   }
+
+  // Encoder-related methods
+  public double getRightPos(){
+    double meanEncoderVal     = (rfMotor.getSelectedSensorPosition() + rbMotor.getSelectedSensorPosition()) / 2;  // average of right side native encoder units
+    double rotations          = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                        // convert native units to rotations
+    double wheelRotations     = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                            // convert rotations of motor shaft to rotations of wheel
+    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                             // convert wheel rotations to linear displacement
+    return linearDisplacement;
+  }
+  public double getLeftPos(){
+    double meanEncoderVal     = (lfMotor.getSelectedSensorPosition() + lbMotor.getSelectedSensorPosition()) / 2;  // average of right side native encoder units
+    double rotations          = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                        // convert native units to rotations
+    double wheelRotations     = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                            // convert rotations of motor shaft to rotations of wheel
+    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                             // convert wheel rotations to linear displacement
+    return linearDisplacement;
+  }
+  public double getRightVel(){
+    double meanEncoderVal      = (rfMotor.getSelectedSensorVelocity() + rbMotor.getSelectedSensorVelocity()) / 2;  // average of right side native encoder units
+           meanEncoderVal     *= 10;                                                                               //Convert (Native Units/100ms) -> (Native Units/1s)
+    double rotations           = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                        // convert native units to rotations
+    double wheelRotations      = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                            // convert rotations of motor shaft to rotations of wheel
+    double linearDisplacement  = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                             // convert wheel rotations to linear displacement
+    return linearDisplacement;
+  }
+  public double getLeftVel(){
+    double meanEncoderVal      = (lfMotor.getSelectedSensorVelocity() + lbMotor.getSelectedSensorVelocity()) / 2;  // average of right side native encoder units
+           meanEncoderVal     *= 10;                                                                               //Convert (Native Units/100ms) -> (Native Units/1s)
+    double rotations           = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                        // convert native units to rotations
+    double wheelRotations      = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                            // convert rotations of motor shaft to rotations of wheel
+    double linearDisplacement  = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                             // convert wheel rotations to linear displacement
+    return linearDisplacement;
+  }
+
+  // Odometry-related methods
+  public void setPosition(Pose2d pos){
+    rfMotor.setSelectedSensorPosition(0);
+    rbMotor.setSelectedSensorPosition(0);
+    lfMotor.setSelectedSensorPosition(0);
+    lbMotor.setSelectedSensorPosition(0);
+    gyro.setRotation2d(pos.getRotation());                                                                   // provide gyro with negative angle, since the gyro records counterclockwise motion
+    odometry.resetPosition(pos, gyro.getRotation2d());                                                       // provide odometry with negative of gyroscope angle, since gyroscope records counterclockwise motion
+
+    var drivetrain = LinearSystemId.identifyDrivetrainSystem(Constants.Drive.Sim.LINEAR_KV,
+                                                             Constants.Drive.Sim.LINEAR_KA,
+                                                             Constants.Drive.Sim.ANGULAR_KV,
+                                                             Constants.Drive.Sim.ANGULAR_KA);
+        sim        = new DifferentialDrivetrainSim(drivetrain,
+                                                   DCMotor.getFalcon500(2),
+                                                   Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO,
+                                                   Constants.Drive.TRACK_WIDTH,
+                                                   Constants.Drive.WHEEL_RADIUS, null);
+  }
+  public Pose2d getPose(){
+    return odometry.getPoseMeters();
+  }
+  public void updateOdometry(){
+    odometry.update(gyro.getRotation2d(), getLeftPos(), getRightPos());
+  }
+
+  // Gyroscope-related methods
+  public double getContinuousGyroAngle(){
+    return gyro.getContinuousAngle();
+  }
+
   
+
+  // Kinematics-related methods
+  public DifferentialDriveWheelSpeeds toWheelSpeeds(ChassisSpeeds chassisSpeeds){
+    return kinematics.toWheelSpeeds(chassisSpeeds);
+  }
+  public DifferentialDriveWheelSpeeds calculateFF(DifferentialDriveWheelSpeeds speeds){
+    double rightFFSpeed = rightFeedForward.calculate(speeds.rightMetersPerSecond);
+    double leftFFSpeed  = leftFeedForward.calculate(speeds.leftMetersPerSecond);
+
+    return new DifferentialDriveWheelSpeeds(leftFFSpeed, rightFFSpeed);
+  }
+
+  // Drive-related methods
+  public void setRawSpeeds(DifferentialDriveWheelSpeeds speeds){
+    speeds.rightMetersPerSecond = MathUtil.clamp(speeds.rightMetersPerSecond, -12,12);
+    speeds.leftMetersPerSecond  = MathUtil.clamp(speeds.leftMetersPerSecond, -12,12);
+
+    rfMotor.setVoltage(speeds.rightMetersPerSecond);
+    rbMotor.setVoltage(speeds.rightMetersPerSecond);
+    lfMotor.setVoltage(speeds.leftMetersPerSecond);
+    lbMotor.setVoltage(speeds.leftMetersPerSecond);
+  }
+  public void setRawSpeeds(double right, double left){
+    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(left, right);
+    setRawSpeeds(wheelSpeeds);
+  }
+
+  // Motor Config-related methods
+  private void setMotorPID(WPI_TalonFX motor, double kP, double kI, double kD, double allowableError){ // Just makes the setPID() method more readable
+    motor.config_kP(0, kP);
+    motor.config_kI(0, kI);
+    motor.config_kD(0, kD);
+    motor.configAllowableClosedloopError(0, allowableError, 0);
+
+  }
+  public void setPID(double kP, double kI, double kD, double allowableError){
+    setMotorPID(rfMotor, kP, kI, kD, allowableError);
+    setMotorPID(lfMotor, kP, kI, kD, allowableError);
+  }
   public void setIdleMode(boolean isBrake){
     if(isBrake){
       rfMotor.setNeutralMode(NeutralMode.Brake);
@@ -116,106 +219,6 @@ public class DriveTrain extends SubsystemBase {
       lbMotor.setNeutralMode(NeutralMode.Coast);
     }
   }
-
-  // Encoder-related methods
-  public double getRightPos(){
-    double meanEncoderVal = (rfMotor.getSelectedSensorPosition() + rbMotor.getSelectedSensorPosition()) / 2; // average of right side native encoder units
-    double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
-    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return linearDisplacement;
-  }
-
-  public double getLeftPos(){
-    double meanEncoderVal = (lfMotor.getSelectedSensorPosition() + lbMotor.getSelectedSensorPosition()) / 2; // average of right side native encoder units
-    double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
-    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return linearDisplacement;
-  }
-
-  public double getRightVel(){
-    double meanEncoderVal = (rfMotor.getSelectedSensorVelocity() + rbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
-    meanEncoderVal *= 10;
-    double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
-    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return linearDisplacement;
-  }
-
-  public double getLeftVel(){
-    double meanEncoderVal = (lfMotor.getSelectedSensorVelocity() + lbMotor.getSelectedSensorVelocity()) / 2; // average of right side native encoder units
-    meanEncoderVal *= 10;
-    double rotations = meanEncoderVal / Constants.Drive.TALON_UNITS_PER_ROTATION;                       // convert native units to rotations
-    double wheelRotations = rotations / Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;                      // convert rotations of motor shaft to rotations of wheel
-    double linearDisplacement = wheelRotations * Constants.Drive.WHEEL_CIRCUMFERENCE;                   // convert wheel rotations to linear displacement
-    return linearDisplacement;
-  }
-
-  // Position-related methods
-  public void setPosition(Pose2d pos){
-    rfMotor.setSelectedSensorPosition(0);
-    rbMotor.setSelectedSensorPosition(0);
-    lfMotor.setSelectedSensorPosition(0);
-    lbMotor.setSelectedSensorPosition(0);
-    gyro.setRotation2d(pos.getRotation());                                                                   // provide gyro with negative angle, since the gyro records counterclockwise motion
-    odometry.resetPosition(pos, gyro.getRotation2d());                                                       // provide odometry with negative of gyroscope angle, since gyroscope records counterclockwise motion
-
-    var drivetrain = LinearSystemId.identifyDrivetrainSystem(Constants.Drive.Sim.LINEAR_KV, Constants.Drive.Sim.LINEAR_KA, Constants.Drive.Sim.ANGULAR_KV, Constants.Drive.Sim.ANGULAR_KA);
-    sim  = new DifferentialDrivetrainSim(drivetrain, DCMotor.getFalcon500(2), Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO, Constants.Drive.TRACK_WIDTH, Constants.Drive.WHEEL_RADIUS, null);
-  }
-
-  // Gyroscope-related methods
-  public double getContinuousGyroAngle(){
-    return gyro.getContinuousAngle();
-  }
-
-  public void updateOdometry(){
-    odometry.update(gyro.getRotation2d(), getLeftPos(), getRightPos());
-  }
-  public Pose2d getPose(){
-    return odometry.getPoseMeters();
-  }
-
-  public DifferentialDriveWheelSpeeds toWheelSpeeds(ChassisSpeeds chassisSpeeds){
-    return kinematics.toWheelSpeeds(chassisSpeeds);
-  }
-  // Drive-related methods
-  public void setRawSpeeds(DifferentialDriveWheelSpeeds speeds){
-    speeds.rightMetersPerSecond  = MathUtil.clamp(speeds.rightMetersPerSecond, -12,12);
-    speeds.leftMetersPerSecond  = MathUtil.clamp(speeds.leftMetersPerSecond, -12,12);
-
-    rfMotor.setVoltage(speeds.rightMetersPerSecond);
-    rbMotor.setVoltage(speeds.rightMetersPerSecond);
-    lfMotor.setVoltage(speeds.leftMetersPerSecond);
-    lbMotor.setVoltage(speeds.leftMetersPerSecond);
-  }
-  public void setRawSpeeds(double right, double left){
-    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(left, right);
-    setRawSpeeds(wheelSpeeds);
-  }
-
-  public DifferentialDriveWheelSpeeds calculateFF(DifferentialDriveWheelSpeeds speeds){
-    double rightFFSpeed = rightFeedForward.calculate(speeds.rightMetersPerSecond);
-    double leftFFSpeed = leftFeedForward.calculate(speeds.leftMetersPerSecond);
-
-    return new DifferentialDriveWheelSpeeds(leftFFSpeed, rightFFSpeed);
-  }
-
-  // PID-related methods
-  private void setMotorPID(WPI_TalonFX motor, double kP, double kI, double kD, double allowableError){ // Just makes the setPID() method more readable
-    motor.config_kP(0, kP);
-    motor.config_kI(0, kI);
-    motor.config_kD(0, kD);
-    motor.configAllowableClosedloopError(0, allowableError, 0);
-
-  }
-  public void setPID(double kP, double kI, double kD, double allowableError){
-    setMotorPID(rfMotor, kP, kI, kD, allowableError);
-    setMotorPID(lfMotor, kP, kI, kD, allowableError);
-  }
-
-  // Acceleration-related methods
   public void setRampRate(double rampRate){  // Ramp rate is how much time it takes to reach max motor speed
     rfMotor.configOpenloopRamp(rampRate);
     lfMotor.configOpenloopRamp(rampRate);
@@ -229,18 +232,17 @@ public class DriveTrain extends SubsystemBase {
     field.setRobotPose(odometry.getPoseMeters());
   }
 
+  // Sim-related Methods
   private int distanceToNativeUnits(double position) { // Necessary Conversions for simulation
     double wheelRotations = position / Constants.Drive.WHEEL_CIRCUMFERENCE;
     double motorRotations = wheelRotations * Constants.Drive.SHAFT_TO_WHEEL_GEAR_RATIO;
-    double nativeUnits = motorRotations * Constants.Drive.TALON_UNITS_PER_ROTATION;
+    double nativeUnits    = motorRotations * Constants.Drive.TALON_UNITS_PER_ROTATION;
     return (int)(nativeUnits);
   }
-
   private int velocityToNativeUnits(double velocity) { // Necessary Conversions for simulation
       // i think this should work
       return (int)(distanceToNativeUnits(velocity) / 10);
   }
-
   @Override
     public void simulationPeriodic() {
 
