@@ -45,26 +45,29 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 public class DriveTrain extends SubsystemBase {
 
   //Initialize motors
-  private final WPI_TalonFX rfMotor = new WPI_TalonFX(Constants.Drive.RFMOTOR_ID);                                     // right-front motor
-  private final WPI_TalonFX rbMotor = new WPI_TalonFX(Constants.Drive.RBMOTOR_ID);                                     // right-back motor
-  private final WPI_TalonFX lfMotor = new WPI_TalonFX(Constants.Drive.LFMOTOR_ID);                                     // left-front motor
-  private final WPI_TalonFX lbMotor = new WPI_TalonFX(Constants.Drive.LBMOTOR_ID);                                     // left-back motor
+  private final WPI_TalonFX rfMotor = new WPI_TalonFX(Constants.Drive.RFMOTOR_ID);  // right-front motor
+  private final WPI_TalonFX rbMotor = new WPI_TalonFX(Constants.Drive.RBMOTOR_ID);  // right-back motor
+  private final WPI_TalonFX lfMotor = new WPI_TalonFX(Constants.Drive.LFMOTOR_ID);  // left-front motor
+  private final WPI_TalonFX lbMotor = new WPI_TalonFX(Constants.Drive.LBMOTOR_ID);  // left-back motor
 
   private final SimpleMotorFeedforward leftFeedForward = 
-            new SimpleMotorFeedforward(Constants.Drive.LEFT_FF_kS, Constants.Drive.LEFT_FF_kV, Constants.Drive.LEFT_FF_kA);
+    new SimpleMotorFeedforward(Constants.Drive.LEFT_FF_kS,
+                               Constants.Drive.LEFT_FF_kV,
+                               Constants.Drive.LEFT_FF_kA);
   private final SimpleMotorFeedforward rightFeedForward = 
-            new SimpleMotorFeedforward(Constants.Drive.RIGHT_FF_kS, Constants.Drive.RIGHT_FF_kV);
+    new SimpleMotorFeedforward(Constants.Drive.RIGHT_FF_kS,
+                               Constants.Drive.RIGHT_FF_kV,
+                               Constants.Drive.RIGHT_FF_kA);
 
   private final DifferentialDriveKinematics kinematics = 
-            new DifferentialDriveKinematics(Constants.Drive.TRACK_WIDTH);                                              // Useful in converting controller inputs to wheel speeds
+    new DifferentialDriveKinematics(Constants.Drive.TRACK_WIDTH);  // Useful in converting controller inputs to wheel speeds
   private DifferentialDriveOdometry odometry = 
-      new DifferentialDriveOdometry(new Rotation2d(0));                                                              // Useful in knowing robot position; the initial rotation value will be overridden in the constructor
-  private Gyroscope gyro = new Gyroscope(new AHRS(SPI.Port.kMXP), true);                                        // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
+    new DifferentialDriveOdometry(new Rotation2d(0));       // Useful in knowing robot position; the initial rotation value will be overridden in the constructor
+  private Gyroscope gyro = 
+    new Gyroscope(new AHRS(SPI.Port.kMXP), true);      // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
   // Telemetry 
   SBTab tab = new SBTab("Drive Subsystem");
-  private Boolean isRunning;
-  private int counter;
   Field2d field = new Field2d();
 
   //Initialize all Simulation-Related Fields
