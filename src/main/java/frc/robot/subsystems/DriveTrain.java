@@ -67,7 +67,6 @@ public class DriveTrain extends SubsystemBase {
     new Gyroscope(new AHRS(SPI.Port.kMXP), true);      // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
   // Telemetry 
-  SBTab tab = new SBTab("Drive Subsystem");
   Field2d field = new Field2d();
 
   //Initialize all Simulation-Related Fields
@@ -99,44 +98,10 @@ public class DriveTrain extends SubsystemBase {
     int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
     simAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
     
-    populateTab();
-    tab.getTab().add(field);
+    
     setPosition(Constants.Drive.START_POSITION);
     setDefaultCommand(new ArcadeDrive(this, ()->Controllers.driverController.getMoveAxis(), ()->Controllers.driverController.getRotateAxis()));
   }
-
-  //Creates DriveSystem ShuffleBoard Tab
-   private void populateTab(){
-    SBNumberGroup angle = tab.getNumberGroup("angle", 0)
-    .setPosition(0,0)
-    .setWidth(10)
-    .setPeriodic(()->gyro.getRotation2d().getDegrees());
-
-    SBNumberGroup ctsAngle = tab.getNumberGroup("cts angle", 0)
-    .setPosition(10,0)
-    .setWidth(10)
-    .setPeriodic(()->gyro.getContinuousAngle());
-    SBNumber leftEncoder = tab.getNumber("Left Encoder VEL", 0)
-    .setPosition(20,0)
-    .setSize(5,5)
-    .setPeriodic(()->getLeftVel());
-    SBNumber rightEncoder = tab.getNumber("Right Encoder VEL", 0)
-    .setPosition(20,5)
-    .setSize(5,5)
-    .setPeriodic(()->getRightVel());
-    SBBoolean zeroEncoder = tab.getBoolean("Zero Encoders", false)
-    .setPosition(20, 10)
-    .setSize(5,5)
-    .setView(BuiltInWidgets.kToggleButton)
-    .setPeriodic((value)->{
-      if(value){
-      setPosition(Constants.Drive.ZERO_POSITION);
-      return false;
-    }else{
-      return value;
-    }});
-  }
-
   
   public void setIdleMode(boolean isBrake){
     if(isBrake){
@@ -261,7 +226,6 @@ public class DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
     
     updateOdometry(); //Must be continuously called to maintain an accurate position of the robot
-    tab.periodic();
     field.setRobotPose(odometry.getPoseMeters());
   }
 
