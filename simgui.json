@@ -9,10 +9,21 @@
       "/LiveWindow/Ungrouped/Talon FX [6]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [7]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
-      "/Shuffleboard/Drive Subsystem/Field": "Field2d"
+      "/Shuffleboard/Drive Subsystem/Field": "Field2d",
+      "/Shuffleboard/DriveTrain/Angle": "Gyro",
+      "/Shuffleboard/DriveTrain/field": "Field2d",
+      "/Shuffleboard/DriveTrain: Config/Motor Controller": "DifferentialDrive",
+      "/Shuffleboard/DriveTrain: Log/Field": "Field2d",
+      "/Shuffleboard/DriveTrain: Log/field": "Field2d",
+      "/Shuffleboard/DriveTrain: Log/gyro": "Gyro"
     },
     "windows": {
       "/Shuffleboard/Drive Subsystem/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/DriveTrain: Log/Field": {
         "window": {
           "visible": true
         }
@@ -20,11 +31,23 @@
     }
   },
   "NetworkTables": {
+    "FMSInfo": {
+      "open": true
+    },
     "Shuffleboard": {
       ".metadata": {
+        "DriveTrain: Config": {
+          "open": true
+        },
         "open": true
       },
       "Drive Subsystem": {
+        "open": true
+      },
+      "DriveTrain: Config": {
+        "open": true
+      },
+      "DriveTrain: Log": {
         "open": true
       },
       "open": true

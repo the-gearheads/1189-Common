@@ -32,20 +32,20 @@ public class SimpleTrajectory extends CommandBase {
   private Pose2d finalPos;
   private boolean isBackward = false;
 
-  public SimpleTrajectory(DriveTrain driveTrain,Pose2d finalPos, boolean isBackward) {
+  public SimpleTrajectory(DriveTrain driveTrain, Pose2d initialPos, Pose2d finalPos, boolean isBackward) {
     this.driveTrain = driveTrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
-    this.initialPos = Constants.Drive.ZERO_POSITION;
+    this.initialPos        = initialPos;
     this.interiorWaypoints = new ArrayList<>();
-    this.finalPos = finalPos;
-    this.isBackward = isBackward;
+    this.finalPos          = finalPos;
+    this.isBackward        = isBackward;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    driveTrain.setPosition(Constants.Drive.ZERO_POSITION);
+    driveTrain.setPosition(initialPos);
     
     TrajectoryConfig config = new TrajectoryConfig(2, 1.5);//*2 and *1.5
     config.setReversed(isBackward);

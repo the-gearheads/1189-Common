@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.auton.FollowPathWeaver;
 import frc.robot.commands.auton.SimpleTrajectory;
-import frc.robot.commands.driveTrain.FFCharacterizer;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+import io.github.oblarg.oblog.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -37,12 +37,16 @@ import frc.robot.controllers.Controllers.ControllerMode;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveTrain driveTrain = new DriveTrain();
-  private final XboxController controller = new XboxController(0);
   // private final Vision vision = new Vision();
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // The first argument is the root container
+    // The second argument is whether logging and config should be given separate tabs
+    Logger.configureLoggingAndConfig(this, true);
   }
 
   /**
@@ -54,16 +58,16 @@ public class RobotContainer {
   private void configureButtonBindings(){
     Controllers.mode = ControllerMode.TESTING;
     // Odometry Testing Mode
-    new JoystickButton(controller, 1).whenPressed(new InstantCommand(()->{
+    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
       driveTrain.setPosition(Constants.Drive.ZERO_POSITION);
     }));
-    new JoystickButton(controller, 3).whenPressed(new InstantCommand(()->{
+    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
       driveTrain.setPosition(Constants.Drive.START_POSITION);
     }));
-    new JoystickButton(controller, 4).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
-    new JoystickButton(controller, 2).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));
+    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
+    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));
 
   }
 
