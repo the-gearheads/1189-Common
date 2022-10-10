@@ -45,7 +45,7 @@ public class SimpleTrajectory extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    driveTrain.setPosition(initialPos);
+    driveTrain.setPose(initialPos);
     
     TrajectoryConfig config = new TrajectoryConfig(2, 1.5);//*2 and *1.5
     config.setReversed(isBackward);

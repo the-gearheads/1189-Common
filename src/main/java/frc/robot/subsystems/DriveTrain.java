@@ -12,8 +12,11 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -65,9 +68,13 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
 
   private final DifferentialDriveKinematics kinematics = 
     new DifferentialDriveKinematics(Constants.Drive.TRACK_WIDTH);  // Useful in converting controller inputs to wheel speeds
-  private DifferentialDriveOdometry odometry = 
-    new DifferentialDriveOdometry(new Rotation2d(0));       // Useful in knowing robot position; the initial rotation value will be overridden in the constructor
-  @Log.Gyro(columnIndex=20, rowIndex=0, width=10, height=10)
+  private DifferentialDrivePoseEstimator odometry = 
+    new DifferentialDrivePoseEstimator(new Rotation2d(0),
+                                      Constants.Drive.ZERO_POSITION, 
+                                      Constants.Drive.STATE_SD,    // State measurement standard deviations. X, Y, theta.
+                                      Constants.Drive.LOCAL_SD,    // Local measurement standard deviations. Left encoder, right encoder, gyro.
+                                      Constants.Drive.GLOBAL_SD);  // Global measurement standard deviations. X, Y, and theta.)
+    @Log.Gyro(columnIndex=20, rowIndex=0, width=10, height=10)
   private Gyroscope gyro = 
     new Gyroscope(SPI.Port.kMXP, true);      // Very useful helper class that can invert the gyroscope (which is used to provide the angle of the robot heading to the odometry object)                                                                   // provides angle to odometry object
 
@@ -107,8 +114,7 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
     int dev      = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
         simAngle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
     
-    
-    setPosition(Constants.Drive.START_POSITION);
+    setPose(Constants.Drive.START_POSITION);
     setDefaultCommand(new ArcadeDrive(this, ()->Controllers.driverController.getMoveAxis(), ()->Controllers.driverController.getRotateAxis()));
   }
 
@@ -149,7 +155,7 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
   }
 
   // Odometry-related methods
-  public void setPosition(Pose2d pos){
+  public void setPose(Pose2d pos){
     rfMotor.setSelectedSensorPosition(0);
     rbMotor.setSelectedSensorPosition(0);
     lfMotor.setSelectedSensorPosition(0);
@@ -168,18 +174,25 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
                                                    Constants.Drive.WHEEL_RADIUS, null);
   }
   public Pose2d getPose(){
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
   @Log(name="Pose", rowIndex=12,columnIndex=30,width=18,height=5)
   public String getSendablePose(){
-    Pose2d pose = odometry.getPoseMeters();
+    Pose2d pose = odometry.getEstimatedPosition();
     return "["+
             ((double) Math.round(pose.getX() * 100.0) / 100.0)+", "+
             ((double) Math.round(pose.getY() * 100.0) / 100.0)+", "+
             ((double) Math.round(pose.getRotation().getDegrees() * 100.0) / 100.0)+"]";
   }
   public void updateOdometry(){
-    odometry.update(gyro.getRotation2d(), getLeftPos(), getRightPos());
+    var wheelSpeeds = new DifferentialDriveWheelSpeeds(getLeftVel(), getRightVel());
+    odometry.update(gyro.getRotation2d(), wheelSpeeds, getLeftPos(), getRightPos());
+  }
+  @Config(rowIndex=10, columnIndex=0, width=10, height=10)
+  private void setOdometry(@Config.NumberSlider double s0, @Config.NumberSlider double s1, @Config.NumberSlider double s2, @Config.NumberSlider double s3, @Config.NumberSlider double s4,
+                           @Config.NumberSlider double l0, @Config.NumberSlider double l1, @Config.NumberSlider double l2,
+                           @Config.NumberSlider double g0, @Config.NumberSlider double g1, @Config.NumberSlider double g2){
+
   }
 
   // Gyroscope-related methods
@@ -256,7 +269,7 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
     // This method will be called once per scheduler run
     
     updateOdometry(); //Must be continuously called to maintain an accurate position of the robot
-    field.setRobotPose(odometry.getPoseMeters());
+    field.setRobotPose(odometry.getEstimatedPosition());
   }
 
   // Sim-related Methods

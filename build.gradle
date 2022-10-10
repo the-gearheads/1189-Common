@@ -93,3 +93,6 @@ wpi.java.configureTestTasks(test)
 repositories {
   maven { url 'https://jitpack.io' }
 }
+compileJava {
+    options.compilerArgs << '-parameters'
+}

@@ -60,11 +60,11 @@ public class RobotContainer {
     // Odometry Testing Mode
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
-      driveTrain.setPosition(Constants.Drive.ZERO_POSITION);
+      driveTrain.setPose(Constants.Drive.ZERO_POSITION);
     }));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
-      driveTrain.setPosition(Constants.Drive.START_POSITION);
+      driveTrain.setPose(Constants.Drive.START_POSITION);
     }));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));

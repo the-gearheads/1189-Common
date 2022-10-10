@@ -4,8 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N5;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -39,6 +45,9 @@ public final class Constants {
         public static final double WHEEL_RADIUS = 0.1016;
         public static final double MAX_X_VEL = 2;
         public static final double MAX_ROT_VEL = 1;
+        public static final Matrix<N5, N1> STATE_SD = new MatBuilder<>(Nat.N5(), Nat.N1()).fill(0.02, 0.02, 0.01, 0.02, 0.02);
+        public static final Matrix<N3, N1> LOCAL_SD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01);
+        public static final Matrix<N3, N1> GLOBAL_SD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01);      
 
 
 
