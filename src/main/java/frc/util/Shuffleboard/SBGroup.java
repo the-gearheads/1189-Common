@@ -1,13 +1,6 @@
 package frc.util.Shuffleboard;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-
 public class SBGroup { // NOT CURRENTLY USED BECAUSE SB LAYOUTS SUCCKKKKKKKKKK
                        // EDIT: WORKS, SINCE DOESN'T USE LAYOUTS ANYMORE
 
