@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.auton.FollowPathWeaver;
 import frc.robot.commands.auton.SimpleTrajectory;
+import frc.robot.commands.vision.CorrectPoseWithVision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
 import io.github.oblarg.oblog.Logger;
@@ -37,7 +38,7 @@ import frc.robot.controllers.Controllers.ControllerMode;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveTrain driveTrain = new DriveTrain();
-  // private final Vision vision = new Vision();
+  private final Vision vision = new Vision();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -47,6 +48,7 @@ public class RobotContainer {
     // The first argument is the root container
     // The second argument is whether logging and config should be given separate tabs
     Logger.configureLoggingAndConfig(this, true);
+    (new CorrectPoseWithVision(vision, driveTrain)).schedule();
   }
 
   /**
@@ -60,11 +62,11 @@ public class RobotContainer {
     // Odometry Testing Mode
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
-      driveTrain.setPose(Constants.Drive.ZERO_POSITION);
+      driveTrain.setPose(Constants.DRIVE.ZERO_POSITION);
     }));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new InstantCommand(()->{
       SmartDashboard.putBoolean("THIS WORKED", true);
-      driveTrain.setPose(Constants.Drive.START_POSITION);
+      driveTrain.setPose(Constants.DRIVE.START_POSITION);
     }));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
     Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));

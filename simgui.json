@@ -10,6 +10,7 @@
       "/LiveWindow/Ungrouped/Talon FX [6]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [7]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/LiveWindow/Vision": "Subsystem",
       "/Shuffleboard/Drive Subsystem/Field": "Field2d",
       "/Shuffleboard/DriveTrain/Angle": "Gyro",
       "/Shuffleboard/DriveTrain/field": "Field2d",
@@ -51,6 +52,9 @@
       "DriveTrain: Log": {
         "open": true
       },
+      "Vision: Log": {
+        "open": true
+      },
       "open": true
     },
     "SmartDashboard": {
@@ -58,6 +62,9 @@
     },
     "photonvision": {
       "Camera": {
+        "open": true
+      },
+      "TargetCamera": {
         "open": true
       },
       "USB_Video_Device": {

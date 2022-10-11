@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
@@ -22,7 +25,7 @@ import edu.wpi.first.math.numbers.N5;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class Drive{
+    public static final class DRIVE{
 
         public static final int RFMOTOR_ID = 4;
         public static final int RBMOTOR_ID = 5;
@@ -51,7 +54,7 @@ public final class Constants {
 
 
 
-        public static class Sim {
+        public static class SIM {
             // 100% incorrect, need to find out in cad
             public static final double JKG_M2 = 5;
             // in kg
@@ -63,6 +66,15 @@ public final class Constants {
             public static final double ANGULAR_KV = 1.79;
             public static final double ANGULAR_KA = 0.69482;
         }
+    }
+
+    public static class VISION{
+        public static final HashMap<Integer, Translation2d> aprilTagPositions = new HashMap<Integer, Translation2d>() {{
+            put(0,new Translation2d(1,1));
+            put(1,new Translation2d(2,2));
+            put(2,new Translation2d(3,3));
+          }};
+        public static final Translation2d cameraToRobot = new Translation2d(0,0);
     }
 
     public static final class Controller{

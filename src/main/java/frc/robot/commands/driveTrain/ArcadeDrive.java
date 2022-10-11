@@ -53,8 +53,8 @@ public class ArcadeDrive extends CommandBase {
     }
     SmartDashboard.putNumber("left wheel", wheelSpeeds.leftMetersPerSecond);
     SmartDashboard.putNumber("right wheel", wheelSpeeds.rightMetersPerSecond);
-    wheelSpeeds.leftMetersPerSecond*=Constants.Drive.MAX_X_VEL;
-    wheelSpeeds.rightMetersPerSecond*=Constants.Drive.MAX_X_VEL;
+    wheelSpeeds.leftMetersPerSecond*=Constants.DRIVE.MAX_X_VEL;
+    wheelSpeeds.rightMetersPerSecond*=Constants.DRIVE.MAX_X_VEL;
     SmartDashboard.putNumber("left wheel after", wheelSpeeds.leftMetersPerSecond);
     SmartDashboard.putNumber("right wheel after", wheelSpeeds.rightMetersPerSecond);
     var ff = driveTrain.calculateFF(wheelSpeeds);

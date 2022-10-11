@@ -17,8 +17,8 @@ public class TurnToAngle extends CommandBase {
   private DriveTrain driveTrain;
   private PIDController rotController = new PIDController(0.05, 0, 0);
   private int satisfactionNumber = 0;
-  double maxRotSpeed = Constants.Drive.MAX_ROT_VEL * (0.5);
-  double minRotSpeed = Constants.Drive.MAX_ROT_VEL * (0.03);
+  double maxRotSpeed = Constants.DRIVE.MAX_ROT_VEL * (0.5);
+  double minRotSpeed = Constants.DRIVE.MAX_ROT_VEL * (0.03);
 
   /** Creates a new TurnToAngleC. */
   public TurnToAngle(DriveTrain driveTrain, double requestedAngle) {
