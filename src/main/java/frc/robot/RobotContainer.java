@@ -38,8 +38,8 @@ public class RobotContainer {
     // The first argument is the root container
     // The second argument is whether logging and config should be given separate tabs
     Logger.configureLoggingAndConfig(this, true);
-    PortForwarder.add(5800, "photonvision.local", 5800);
-    PortForwarder.add(5800, "localhost", 5800);
+    // PortForwarder.add(5800, "photonvision.local", 5800);
+    // PortForwarder.add(5800, "localhost", 5800);
     // (new CorrectPoseWithVision(vision, driveTrain)).schedule();
   }
 
