@@ -8,6 +8,7 @@ import javax.xml.stream.util.XMLEventConsumer;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
@@ -48,7 +49,9 @@ public class RobotContainer {
     // The first argument is the root container
     // The second argument is whether logging and config should be given separate tabs
     Logger.configureLoggingAndConfig(this, true);
-    (new CorrectPoseWithVision(vision, driveTrain)).schedule();
+    PortForwarder.add(5800, "photonvision.local", 5800);
+    PortForwarder.add(5800, "localhost", 5800);
+    // (new CorrectPoseWithVision(vision, driveTrain)).schedule();
   }
 
   /**

@@ -29,9 +29,8 @@ public class CorrectPoseWithVision extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(vision.isConnected()){
+    // if(vision.isConnected()){
       drivetrain.addVisionMeasurement(new Pose2d(vision.getRobotPosFromBestTarget(), new Rotation2d(drivetrain.getContinuousGyroAngle())));
-    }
   }
 
   // Called once the command ends or is interrupted.

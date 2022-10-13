@@ -45,7 +45,6 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
   private final WPI_TalonFX rbMotor = new WPI_TalonFX(Constants.DRIVE.RBMOTOR_ID);  // right-back motor
   private final WPI_TalonFX lfMotor = new WPI_TalonFX(Constants.DRIVE.LFMOTOR_ID);  // left-front motor
   private final WPI_TalonFX lbMotor = new WPI_TalonFX(Constants.DRIVE.LBMOTOR_ID);  // left-back motor
-
   private final SimpleMotorFeedforward leftFeedForward = 
     new SimpleMotorFeedforward(Constants.DRIVE.LEFT_FF_kS,
                                Constants.DRIVE.LEFT_FF_kV,
