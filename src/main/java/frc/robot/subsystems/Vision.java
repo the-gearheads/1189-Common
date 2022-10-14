@@ -28,50 +28,48 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision extends SubsystemBase implements Loggable{
   /** Creates a new Vision. */
-  PhotonCamera camera;
-  boolean isConnected = false;
-  double latencyVal = 0;
-  int equivalencyCounter=0;
+  CameraParams targetCam;
+  CameraParams driveCam;
   public Vision() {
-    isConnected = false;
+    targetCam = new CameraParams("target");
+    driveCam  = new CameraParams("drive");
   }
   
-  public boolean connectToPhotonVision(){
-      camera = new PhotonCamera("TargetCamera");
-      double newLatency = camera.getLatestResult().getLatencyMillis();
-      if(newLatency != latencyVal){
-        equivalencyCounter=0;
-      }
-      else{
-        equivalencyCounter++;
-      }
-      latencyVal=newLatency;
+  public void connectToCam(CameraParams camParams){
+      camParams.camera = new PhotonCamera(camParams.name);
+      if(camParams.lastLatencyVal == camParams.camera.getLatestResult().getLatencyMillis())
+        camParams.equivalencyCount++;
+      else
+        camParams.equivalencyCount=0;
+      if(camParams.equivalencyCount>10)
+        camParams.isConnected = false;
+      else 
+        camParams.isConnected = true;
 
-      if(equivalencyCounter>5){
-        return false;
-      }else{
-        return true;
-      }
   }
-  @Log.BooleanBox(name="connected?", rowIndex=0,columnIndex=0,width=10,height=10)
-  public boolean isConnected(){
-    return isConnected;
+  @Log.BooleanBox(name="Target Cam Connected?", rowIndex=0,columnIndex=15,width=15,height=5)
+  public boolean isTargetCamConnected(){
+    return targetCam.isConnected;
   }
-  @Log.Dial(name="Target Num", rowIndex=0,columnIndex=10,width=10,height=10)
+  @Log.BooleanBox(name="Drive Cam Connected?", rowIndex=0,columnIndex=0,width=15,height=5)
+  public boolean isDriveCamConnected(){
+    return driveCam.isConnected;
+  }
+  @Log.Dial(name="Target Num", rowIndex=0,columnIndex=30,width=15,height=10)
   public int getTargetNum(){
-    if(isConnected){
-      return camera.getLatestResult().targets.size();
+    if(targetCam.isConnected){
+      return targetCam.camera.getLatestResult().targets.size();
     }else{
       return 0;
     }
   }
   private List<String> topTargetPositions = new ArrayList<String>(){{add("");add("");add("");}}; 
-  @Log(name="Target Positions", rowIndex=10,columnIndex=0,width=20,height=20)
+  @Log(name="Target Positions", rowIndex=10,columnIndex=30,width=15,height=20)
   private SendableStringArray sendableTopTargetPositions = new SendableStringArray(()->topTargetPositions.get(0),()->topTargetPositions.get(1),()->topTargetPositions.get(2));
   private void updateTopTargetPositions(){
     int index=0;
-    if(isConnected && camera.getLatestResult().hasTargets()){
-      List<Translation3d> translations=camera.getLatestResult().targets.stream().map((target)->target.getCameraToTarget().getTranslation()).collect(Collectors.toList());
+    if(targetCam.isConnected && targetCam.camera.getLatestResult().hasTargets()){
+      List<Translation3d> translations=targetCam.camera.getLatestResult().targets.stream().map((target)->target.getCameraToTarget().getTranslation()).collect(Collectors.toList());
       while(index<translations.size()){
         topTargetPositions.set(index,translations.get(index).toString().substring(13));
         index++;
@@ -84,7 +82,7 @@ public class Vision extends SubsystemBase implements Loggable{
   }
 
   public Translation2d getRobotPosFromBestTarget(){
-    PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = targetCam.camera.getLatestResult().getBestTarget();
     int targetId = target.getFiducialId();
     Translation2d targetToCamera=target.getCameraToTarget().getTranslation().toTranslation2d().unaryMinus();
     
@@ -97,7 +95,8 @@ public class Vision extends SubsystemBase implements Loggable{
 
   @Override
   public void periodic() {
-      isConnected = connectToPhotonVision();
-      updateTopTargetPositions();
+    connectToCam(targetCam);
+    connectToCam(driveCam);
+    updateTopTargetPositions();
   }
 }
