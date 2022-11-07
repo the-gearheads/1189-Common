@@ -78,7 +78,7 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
   private TalonFXSimCollection lSim = lfMotor.getSimCollection();
 
   private SimDouble simAngle;
-  private DifferentialDrivetrainSim sim;
+  public DifferentialDrivetrainSim sim;
 
   /** Creates a new DriveTrain. */
   public DriveTrain() {
@@ -179,19 +179,19 @@ public class DriveTrain extends SubsystemBase  implements Loggable{
   public void addVisionMeasurement(Pose2d pose){
     odometry.addVisionMeasurement(pose, Timer.getFPGATimestamp());
   }
+  public void addVisionMeasurement(Pose2d pose, double time){
+    odometry.addVisionMeasurement(pose, time);
+  }
   @Config(rowIndex=0, columnIndex=10, width=10, height=20)
   private void setOdometry(@Config.NumberSlider double s0, @Config.NumberSlider double s1, @Config.NumberSlider double s2, @Config.NumberSlider double s3, @Config.NumberSlider double s4,
                            @Config.NumberSlider double l0, @Config.NumberSlider double l1, @Config.NumberSlider double l2,
                            @Config.NumberSlider double g0, @Config.NumberSlider double g1, @Config.NumberSlider double g2){
 
   }
-
   // Gyroscope-related methods
   public double getContinuousGyroAngle(){
     return gyro.getContinuousAngle();
   }
-
-  
 
   // Kinematics-related methods
   public DifferentialDriveWheelSpeeds toWheelSpeeds(ChassisSpeeds chassisSpeeds){

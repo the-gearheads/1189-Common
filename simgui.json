@@ -53,11 +53,11 @@
         "open": true
       },
       "Vision: Log": {
+        "Target Positions": {
+          "open": true
+        },
         "open": true
       },
-      "open": true
-    },
-    "SmartDashboard": {
       "open": true
     },
     "photonvision": {
@@ -70,7 +70,10 @@
       "USB_Video_Device": {
         "open": true
       },
-      "open": true
+      "open": true,
+      "target": {
+        "open": true
+      }
     }
   }
 }

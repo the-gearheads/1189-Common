@@ -10,11 +10,16 @@ import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N5;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -35,7 +40,8 @@ public final class Constants {
         public static final double SHAFT_TO_WHEEL_GEAR_RATIO = 12.75;//12.75 rotations for encoder to 1 rotation for wheel
         public static final double WHEEL_CIRCUMFERENCE = 0.64;//meters
         public static final double TRACK_WIDTH = 0.68863;//meter
-        public static final Pose2d START_POSITION = new Pose2d(7.4,1.5, new Rotation2d(Math.PI/2));
+        // public static final Pose2d START_POSITION = new Pose2d(7.4,1.5, new Rotation2d(Math.PI/2));
+        public static final Pose2d START_POSITION = new Pose2d(Units.inchesToMeters(55),Units.inchesToMeters(78), new Rotation2d(Math.PI));
         public static final double LEFT_FF_kS = 0.64993;
         public static final double LEFT_FF_kV = 2.0752;
         public static final double LEFT_FF_kA = 0.47984;
@@ -50,7 +56,7 @@ public final class Constants {
         public static final double MAX_ROT_VEL = 1;
         public static final Matrix<N5, N1> STATE_SD = new MatBuilder<>(Nat.N5(), Nat.N1()).fill(0.02, 0.02, 0.01, 0.02, 0.02);
         public static final Matrix<N3, N1> LOCAL_SD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> GLOBAL_SD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01);      
+        public static final Matrix<N3, N1> GLOBAL_SD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.0001, 0.00001, 0.000001);      
 
 
 
@@ -69,16 +75,19 @@ public final class Constants {
     }
 
     public static class VISION{
-        public static final HashMap<Integer, Translation2d> aprilTagPositions = new HashMap<Integer, Translation2d>() {{
-            put(0,new Translation2d(1,1));
-            put(1,new Translation2d(2,2));
-            put(2,new Translation2d(3,3));
+        public static final HashMap<Integer, Pose3d> aprilTagPositions = new HashMap<Integer, Pose3d>() {{
+            put(0,new Pose3d(Units.inchesToMeters(144),Units.inchesToMeters(31.5),Units.inchesToMeters(60), new Rotation3d(0,0,0)));
+            put(1,new Pose3d(1,1,1, new Rotation3d(0,0,0)));
+            put(2,new Pose3d(1,1,1, new Rotation3d(0,0,0)));
           }};
-        public static final Translation2d cameraToRobot = new Translation2d(0,0);
+          
+        public static final Transform3d cameraToRobot = new Transform3d(new Translation3d(Units.inchesToMeters(1),
+                                                                                          Units.inchesToMeters(19),
+                                                                                          Units.inchesToMeters(-73)),
+                                                                                          new Rotation3d(0,0,Math.PI));
     }
 
     public static final class Controller{
-
         public static final double DRIVE_DEADBAND = 0.07;
         public static final double ROTATE_DEADBAND = 0.07;
     }

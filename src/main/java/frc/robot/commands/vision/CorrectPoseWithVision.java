@@ -5,7 +5,10 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
@@ -24,19 +27,29 @@ public class CorrectPoseWithVision extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    SmartDashboard.putBoolean("is working",true);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(vision.isTargetCamConnected() && vision.getTargetNum()>0){
-      drivetrain.addVisionMeasurement(new Pose2d(vision.getRobotPosFromBestTarget(), new Rotation2d(drivetrain.getContinuousGyroAngle())));
+    if(vision.hasTargets()){
+      Pose3d robotPos3d=vision.getRobotPosFromBestTarget();
+      Pose2d robotPos2d=robotPos3d.toPose2d();
+      robotPos2d=new Pose2d(robotPos2d.getTranslation(), drivetrain.getP
+      ose().getRotation());
+      drivetrain.addVisionMeasurement(robotPos2d, Timer.getFPGATimestamp() - vision.getLatency()/1000.0);
+      SmartDashboard.putBoolean("is working",true);
+    }else{
+      SmartDashboard.putBoolean("is working",false);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

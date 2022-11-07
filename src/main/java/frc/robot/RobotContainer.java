@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.auton.FollowPathWeaver;
+import frc.robot.commands.vision.CorrectPoseWithVision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
 import io.github.oblarg.oblog.Logger;
@@ -38,9 +39,9 @@ public class RobotContainer {
     // The first argument is the root container
     // The second argument is whether logging and config should be given separate tabs
     Logger.configureLoggingAndConfig(this, true);
-    // PortForwarder.add(5800, "photonvision.local", 5800);
+    PortForwarder.add(5800, "photonvision.local", 5800);
     // PortForwarder.add(5800, "localhost", 5800);
-    // (new CorrectPoseWithVision(vision, driveTrain)).schedule();
+    vision.setDefaultCommand(new CorrectPoseWithVision(vision, driveTrain));
   }
 
   /**
@@ -60,8 +61,8 @@ public class RobotContainer {
       SmartDashboard.putBoolean("THIS WORKED", true);
       driveTrain.setPose(Constants.DRIVE.START_POSITION);
     }));
-    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
-    Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));
+    // Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "StartToHuman"));
+    // Controllers.driverController.getResetOdometryButton(ControllerMode.TESTING).whenPressed(new FollowPathWeaver(driveTrain, "HumanToStart"));
 
   }
 

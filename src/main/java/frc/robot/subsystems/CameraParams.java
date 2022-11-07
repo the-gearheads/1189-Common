@@ -17,5 +17,15 @@ public class CameraParams {
         this.isConnected=false;
     }
 
-
+    public void connect(){
+        camera = new PhotonCamera(name);
+        if(lastLatencyVal == camera.getLatestResult().getLatencyMillis())
+          equivalencyCount++;
+        else
+          equivalencyCount=0;
+        if(equivalencyCount>10)
+          isConnected = false;
+        else 
+          isConnected = true;
+    }
 }
