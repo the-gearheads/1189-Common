@@ -37,13 +37,10 @@ public class CorrectPoseWithVision extends CommandBase {
     if(vision.hasTargets()){
       Pose3d robotPos3d=vision.getRobotPosFromBestTarget();
       Pose2d robotPos2d=robotPos3d.toPose2d();
-      robotPos2d=new Pose2d(robotPos2d.getTranslation(), drivetrain.getP
-      ose().getRotation());
+      robotPos2d=new Pose2d(robotPos2d.getTranslation(), drivetrain.getPose().getRotation());
       drivetrain.addVisionMeasurement(robotPos2d, Timer.getFPGATimestamp() - vision.getLatency()/1000.0);
-      SmartDashboard.putBoolean("is working",true);
-    }else{
-      SmartDashboard.putBoolean("is working",false);
     }
+    //oh wow life changing code!
   }
 
   // Called once the command ends or is interrupted.
